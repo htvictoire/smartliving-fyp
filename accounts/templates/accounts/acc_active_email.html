@@ -1,0 +1,16 @@
+{% autoescape off %}
+Cher(e) propriaitaire de l'adresse mail {{ user.email }},
+
+Vous recevez ce message en réponse à votre demande de création de compte <br> à cet adresse e-mail dans le system de gestion de Kelor Univ.
+
+Veuillez cliquez sur le lien suivant pour confirmer votre adresse mail:
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %} 
+
+Si ce n'est pas vous, quelqu'un est probablement entrain d'essayer de créer un compte avec votre adresse mail. Veuilez ignorer ce message.
+
+Cordialement,
+
+Services informatiques de Kelor University.
+
+{% endautoescape %}

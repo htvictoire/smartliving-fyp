@@ -1,0 +1,67 @@
+
+{% extends 'accounts/base.html' %}  {% load static %}
+
+        {% block title %}{{title}}{% endblock title %}
+        {% block description %}{{description}}{% endblock description %}
+        {% block main %}
+
+        
+                {% csrf_token %}
+                <div class="modal-body py-10 px-lg-17">
+                        
+                    <div class= "modal-body">
+
+                    <div class= "modal-body row">
+
+                        
+                        {% if place_manager %}
+                        <a href="{% url 'create_antity' %}"  class="btn btn-primary">
+                            <span class="indicator-label">
+                                Add an Antity
+                            </span>
+                        </a>
+                        
+                        {% endif %}
+                        <div class="card-body pt-6">
+                            
+                            {% for board in userantities %}
+                            <div class="d-flex flex-stack">  
+                                <div class="symbol symbol-40px me-4">
+                                    <div class="symbol-label fs-2 fw-semibold text-inverse-danger" style="background-color: {{board.bg_color}};"  >{{board.first_letter}}</div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                 
+                                    <div class="flex-grow-1 me-2">
+                                        <a class="text-gray-800 text-hover-primary fs-6 fw-bold">{{board.name}}</a>
+                                        
+                                        <span class="text-muted fw-semibold d-block fs-7">{{board.objects_number}} Object(s)</span>
+                                    </div>
+                                    
+                                    <a href="{% url "manage_antity" board.id %}" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                        <i class="ki-outline ki-arrow-right fs-2"></i>   </a>
+                                       
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="separator separator-dashed my-4"></div>
+                            
+                            
+                            {% endfor %}
+                               
+                        </div>
+
+
+                                
+                    </div>
+
+                    </div>
+
+
+                    
+                </div>
+            
+            
+
+{% endblock %}

@@ -1,0 +1,351 @@
+{% extends 'accounts/base.html' %} {% load static %} {% block main %}
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+  <!--begin::Content wrapper-->
+  <div class="d-flex flex-column flex-column-fluid">
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+      <!--begin::Content container-->
+      <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Chart widget 20-->
+        <div class="card card-flush mb-5 mb-lg-10">
+          <!--begin::Header-->
+          <div class="card-header py-5">
+            <!--begin::Title-->
+            <h3 class="card-title fw-bold text-gray-800">Monthly Targets</h3>
+            <!--end::Title-->
+
+            <!--begin::Toolbar-->
+            <div class="card-toolbar">
+              <!--begin::Daterangepicker(defined in src/js/layout/app.js)-->
+              <div
+                data-kt-daterangepicker="true"
+                data-kt-daterangepicker-opens="left"
+                class="btn btn-sm btn-light d-flex align-items-center px-4"
+              >
+                <!--begin::Display range-->
+                <div class="text-gray-600 fw-bold">Loading date range...</div>
+                <!--end::Display range-->
+
+                <i
+                  class="ki-outline ki-calendar-8 text-gray-500 lh-0 fs-2 ms-2 me-0"
+                ></i>
+              </div>
+              <!--end::Daterangepicker-->
+            </div>
+            <!--end::Toolbar-->
+          </div>
+          <!--end::Header-->
+
+          <!--begin::Card body-->
+          <div
+            class="card-body d-flex justify-content-between flex-column pb-0 px-0 pt-1"
+          >
+            <!--begin::Items-->
+            <div class="d-flex flex-wrap d-grid gap-5 px-9 mb-5">
+              <!--begin::Item-->
+              <div class="me-md-2">
+                <!--begin::Statistics-->
+                <div class="d-flex mb-2">
+                  <span class="fs-4 fw-semibold text-gray-500 me-1">$</span>
+                  <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2"
+                    >12,706</span
+                  >
+                </div>
+                <!--end::Statistics-->
+
+                <!--begin::Description-->
+                <span class="fs-6 fw-semibold text-gray-500"
+                  >Targets for April</span
+                >
+                <!--end::Description-->
+              </div>
+              <!--end::Item-->
+
+              <!--begin::Item-->
+              <div
+                class="border-start-dashed border-end-dashed border-start border-end border-gray-300 px-5 ps-md-10 pe-md-7 me-md-5"
+              >
+                <!--begin::Statistics-->
+                <div class="d-flex mb-2">
+                  <span class="fs-4 fw-semibold text-gray-500 me-1">$</span>
+                  <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2"
+                    >8,035</span
+                  >
+                </div>
+                <!--end::Statistics-->
+
+                <!--begin::Description-->
+                <span class="fs-6 fw-semibold text-gray-500"
+                  >Actual for April</span
+                >
+                <!--end::Description-->
+              </div>
+              <!--end::Item-->
+
+              <!--begin::Item-->
+              <div class="m-0">
+                <!--begin::Statistics-->
+                <div class="d-flex align-items-center mb-2">
+                  <!--begin::Currency-->
+                  <span
+                    class="fs-4 fw-semibold text-gray-500 align-self-start me-1"
+                    >$</span
+                  >
+                  <!--end::Currency-->
+
+                  <!--begin::Value-->
+                  <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2"
+                    >4,684</span
+                  >
+                  <!--end::Value-->
+
+                  <!--begin::Label-->
+                  <span class="badge badge-light-success fs-base">
+                    <i
+                      class="ki-outline ki-black-up fs-7 text-success ms-n1"
+                    ></i>
+                    4.5%
+                  </span>
+                  <!--end::Label-->
+                </div>
+                <!--end::Statistics-->
+
+                <!--begin::Description-->
+                <span class="fs-6 fw-semibold text-gray-500">GAP</span>
+                <!--end::Description-->
+              </div>
+              <!--end::Item-->
+            </div>
+            <!--end::Items-->
+
+            <!--begin::Chart-->
+            <div
+              id="kt_charts_widget_20"
+              class="min-h-auto ps-4 pe-6"
+              data-kt-chart-info="Sales"
+              style="height: 300px"
+            ></div>
+            <!--end::Chart-->
+          </div>
+          <!--end::Card body-->
+        </div>
+        <!--end::Chart widget 20-->
+
+        <!--begin::Row-->
+        <div class="row g-5 g-xl-10 g-xl-10">
+          <!--begin::Col-->
+          <div class="col-xl-6 mb-xl-10">
+            <!--begin::List widget 8-->
+            <div class="card card-flush h-xl-100">
+              <!--begin::Header-->
+              <div class="card-header pt-7 mb-5">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                  <span class="card-label fw-bold text-gray-800"
+                    >Visits by Country</span
+                  >
+                  <span class="text-gray-500 mt-1 fw-semibold fs-6"
+                    >20 countries share 97% visits</span
+                  >
+                </h3>
+                <!--end::Title-->
+
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                  <a
+                    href="apps/ecommerce/sales/listing.html"
+                    class="btn btn-sm btn-light"
+                    >View All</a
+                  >
+                </div>
+                <!--end::Toolbar-->
+              </div>
+              <!--end::Header-->
+
+              <!--begin::Body-->
+              <div class="card-body pt-0">
+                <!--begin::Items-->
+                <div class="m-0">
+                  <!--begin::Item-->
+                  <div class="d-flex flex-stack">
+                    <!--begin::Flag-->
+                    <img
+                      src="assets/media/flags/united-states.svg"
+                      class="me-4 w-25px"
+                      style="border-radius: 4px"
+                      alt=""
+                    />
+                    <!--end::Flag-->
+
+                    <!--begin::Section-->
+                    <div class="d-flex flex-stack flex-row-fluid d-grid gap-2">
+                      <!--begin::Content-->
+                      <div class="me-5">
+                        <!--begin::Title-->
+                        <a
+                          href="#"
+                          class="text-gray-800 fw-bold text-hover-primary fs-6"
+                          >United States</a
+                        >
+                        <!--end::Title-->
+
+                        <!--begin::Desc-->
+                        <span
+                          class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0"
+                          >Direct link clicks</span
+                        >
+                        <!--end::Desc-->
+                      </div>
+                      <!--end::Content-->
+
+                      <!--begin::Info-->
+                      <div class="d-flex align-items-center">
+                        <!--begin::Number-->
+                        <span class="text-gray-800 fw-bold fs-6 me-3 d-block"
+                          >9,763</span
+                        >
+                        <!--end::Number-->
+
+                        <!--begin::Label-->
+                        <div class="m-0">
+                          <!--begin::Label-->
+                          <span class="badge badge-light-success fs-base">
+                            <i
+                              class="ki-outline ki-arrow-up fs-5 text-success ms-n1"
+                            ></i>
+                            2.6%
+                          </span>
+                          <!--end::Label-->
+                        </div>
+                        <!--end::Label-->
+                      </div>
+                      <!--end::Info-->
+                    </div>
+                    <!--end::Section-->
+                  </div>
+                  <!--end::Item-->
+
+                  <!--begin::Separator-->
+                  <div class="separator separator-dashed my-3"></div>
+                  <!--end::Separator-->
+                </div>
+                <!--end::Items-->
+              </div>
+              <!--end::Body-->
+            </div>
+            <!--end::LIst widget 8-->
+          </div>
+          <!--end::Col-->
+
+          <!--begin::Col-->
+          <div class="col-xl-6 mb-xl-10">
+            <!--begin::List widget 9-->
+            <div class="card card-flush h-xl-100">
+              <!--begin::Header-->
+              <div class="card-header py-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                  <span class="card-label fw-bold text-gray-800"
+                    >Social Network Visits</span
+                  >
+                  <span class="text-gray-500 mt-1 fw-semibold fs-6"
+                    >8k social visitors</span
+                  >
+                </h3>
+                <!--end::Title-->
+
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                  <a href="#" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <!--end::Toolbar-->
+              </div>
+              <!--end::Header-->
+
+              <!--begin::Body-->
+              <div
+                class="card-body card-body d-flex justify-content-between flex-column pt-3"
+              >
+                <!--begin::Item-->
+                <div class="d-flex flex-stack">
+                  <!--begin::Flag-->
+                  <img
+                    src="assets/media/svg/brand-logos/dribbble-icon-1.svg"
+                    class="me-4 w-30px"
+                    style="border-radius: 4px"
+                    alt=""
+                  />
+                  <!--end::Flag-->
+
+                  <!--begin::Section-->
+                  <div
+                    class="d-flex align-items-center flex-stack flex-wrap flex-row-fluid d-grid gap-2"
+                  >
+                    <!--begin::Content-->
+                    <div class="me-5">
+                      <!--begin::Title-->
+                      <a
+                        href="#"
+                        class="text-gray-800 fw-bold text-hover-primary fs-6"
+                        >Dribbble</a
+                      >
+                      <!--end::Title-->
+
+                      <!--begin::Desc-->
+                      <span
+                        class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0"
+                        >Community</span
+                      >
+                      <!--end::Desc-->
+                    </div>
+                    <!--end::Content-->
+
+                    <!--begin::Wrapper-->
+                    <div class="d-flex align-items-center">
+                      <!--begin::Number-->
+
+                      <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+
+                      <!--end::Number-->
+
+                      <!--begin::Info-->
+                      <div class="m-0">
+                        <!--begin::Label-->
+                        <span class="badge badge-light-success fs-base">
+                          <i
+                            class="ki-outline ki-arrow-up fs-5 text-success ms-n1"
+                          ></i>
+                          2.6%
+                        </span>
+                        <!--end::Label-->
+                      </div>
+                      <!--end::Info-->
+                    </div>
+                    <!--end::Wrapper-->
+                  </div>
+                  <!--end::Section-->
+                </div>
+                <!--end::Item-->
+
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-3"></div>
+                <!--end::Separator-->
+              </div>
+              <!--end::Body-->
+            </div>
+            <!--end::List widget 9-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Row-->
+      </div>
+      <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+  </div>
+  <!--end::Content wrapper-->
+  {% include "accounts/footer.html" %}
+</div>
+
+{% endblock %}

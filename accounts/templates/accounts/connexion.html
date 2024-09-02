@@ -1,0 +1,62 @@
+{%  extends 'students/base1.html' %}
+{% load static %}
+
+{% block content %}
+
+
+  <div class="card-body">
+
+    <div class="pt-4 pb-2">
+      <h5 class="card-title text-center pb-0 fs-4">Connectez-vous à Votre Compte</h5>
+      <p class="text-center small">Entrez votre Matricule Etudiant ou Adresse Email et votre mot de passe pour vous connecter.</p>
+    </div>
+
+    <form method="post" action=" " class="row g-3 needs-validation">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        {% for error in form.email.errors %}
+          <div class="col-12">
+            <p class="text-danger">{{ error }}</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="col-12">
+          <label for="Username" class="form-label">Matricule Etudiant Ou Adresse Email</label>
+          <div class="input-group has-validation">
+              <input type="text" name="username" class="form-control" id="email" required>
+              <div class="invalid-feedback">Veuillez entrer votre Numéro Etudiant/Adresse Email.</div>
+          </div>
+      </div>
+
+      <div class="col-12">
+          <label for="password" class="form-label">Mot de Passe</label>
+          <input type="password" name="password" class="form-control" id="password" required>
+          <div class="invalid-feedback">Veuillez entrer votre mot de passe.</div>
+      </div>
+
+
+      <div class="col-12">
+          <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
+              <label class="form-check-label" for="remember_me">Rester connecté dans ce navigateur</label>
+          </div>
+      </div>
+      
+      <div class="col-12">
+          <button class="btn btn-primary w-100" type="submit">Connexion</button>
+      </div>
+      
+      <div class="col-12">
+          <p class="text-center small">Mot de Passe Oublié? <a href="{% url 'password_reset' %}">Réinitialiser </a></p>
+          
+          <p class="text-center small">Vous n'êtes pas un étudiant? <a href="{% url 'studentregister' %}">Inscrivez-vous</a></p>
+      </div>
+    </form>
+
+  </div>
+
+  
+ 
+{% endblock %}

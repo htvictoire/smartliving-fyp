@@ -1,0 +1,131 @@
+
+{% extends 'students/headerfooter.html' %}
+{% load static %}
+{% block content %}
+
+  <h2>Créer un Étudiant</h2>
+
+
+<form method="post" id="studentForm" data-departements-url="{% url 'charger_departements' %}" data-facultes-url="{% url 'charger_facultes' %}" data-programmes-url="{% url 'charger_programmes' %}" data-classes-url ="{% url 'charger_classes' %}" 
+data-quartiers-url ="{% url 'charger_quartiers' %}" data-avenues-url ="{% url 'charger_avenues' %}">
+  {% csrf_token %}
+  {{form}}
+  {{ form2 }}
+  <button type="submit">Créer</button>
+</form>
+
+
+{% if mail_envoye %}
+<div class="popup">
+    <img src="{% static '/img/tick.png' %}">
+    <h2>Fait</h2>
+    <p>Votre inscription s'est derouleé avec succès et nous vous avons envoyé un e-mail. <br> Veuillez vérifier votre boîte de réception, y compris le dossier de spam, et suivez les étapes pour confirmer votre compte .</p>
+    <a href="{% url 'connexion' %}" class="popup-button" >Compris</a>
+</div>
+{% endif %}
+<link href="{% static '/popup/style.css' %}?v={{ STATIC_VERSION }}" rel="stylesheet">
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  
+  $("#id_institut").change(function () {
+      const url = $("#studentForm").attr("data-departements-url"); 
+      const institutId = $(this).val(); 
+
+      $.ajax({                       
+          url: url,                    
+          data: {
+              'institut_id': institutId       
+          },
+          success: function (data) {   
+              $("#id_departement").html(data);  
+          }
+      });
+  });
+  
+
+  $("#id_departement").change(function () {
+      const url = $("#studentForm").attr("data-facultes-url"); 
+      const departementId = $(this).val();
+
+      $.ajax({                       
+          url: url,                    
+          data: {
+              'departement_id': departementId       
+          },
+          success: function (data) {   
+              $("#id_faculte").html(data);  
+          }
+      });
+  });
+
+  $("#id_faculte").change(function () {
+      const url = $("#studentForm").attr("data-programmes-url"); 
+      const faculteId = $(this).val();
+
+      $.ajax({                       
+          url: url,                    
+          data: {
+              'faculte_id': faculteId       
+          },
+          success: function (data) {   
+              $("#id_programme").html(data);  
+          }
+      });
+  });
+  
+  $("#id_programme").change(function () {
+      const url = $("#studentForm").attr("data-classes-url"); 
+      const programmeId = $(this).val();
+
+      $.ajax({                       
+          url: url,                    
+          data: {
+              'programme_id': programmeId       
+          },
+          success: function (data) {   
+              $("#id_classe").html(data);  
+          }
+      });
+  });
+
+
+  $("#id_commune").change(function () {
+      const url = $("#studentForm").attr("data-quartiers-url"); 
+      const communeId = $(this).val();
+
+      $.ajax({                       
+          url: url,                    
+          data: {
+              'commune_id': communeId     
+          },
+          success: function (data) {   
+              $("#id_quartier").html(data);  
+          }
+      });
+  });
+
+
+  $("#id_quartier").change(function () {
+      const url = $("#studentForm").attr("data-avenues-url"); 
+      const quartierId = $(this).val();
+
+      $.ajax({
+          url: url,
+          data: {
+              'quartier_id': quartierId
+          },
+          success: function (data) {
+              $("#id_avenue").html(data);
+          }
+      });
+    })
+
+</script>
+
+{% endblock %}
+##############################################################################################################
+
+

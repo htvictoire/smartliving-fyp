@@ -1,0 +1,171 @@
+
+
+
+
+{% extends 'accounts/base.html' %}  {% load static %}
+
+
+        {% block active %}
+        {% if active_place %}
+        <span class="menu-link"
+        ><span class="menu-title">{{active_place}}</span
+          ><span class="menu-arrow"></span></span>
+        
+        {% endif %}
+        {% endblock active %}
+
+        {% block main %}
+            <form >
+                {% csrf_token %}
+                <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
+
+                        
+                    
+                        <div class="row mb-5">
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                                
+                                <label class="required fs-5 fw-semibold mb-2">Name</label>
+                                    
+                                {{form.nom}}
+                                
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                           
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                               
+                                <label class="required fs-5 fw-semibold mb-2">GPIO</label>
+                                {{form.gpio}}
+                                
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                          
+                        </div>
+                        
+        
+                        <div class="d-flex flex-column mb-5 fv-row fv-plugins-icon-container" data-select2-id="select2-data-340-1nfs">
+                           
+                            <label class="d-flex align-items-center fs-5 fw-semibold mb-2">
+                                <span class="required">Country</span>
+        
+                                                        
+                                <span class="ms-1" data-bs-toggle="tooltip" aria-label="Your payment statements may very based on selected country" data-bs-original-title="Your payment statements may very based on selected country" data-kt-initialized="1">
+                                <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i></span>                            </label>
+                                                   
+                                
+                            <select name="country" data-control="select2" data-dropdown-parent="#kt_modal_new_address" data-placeholder="Select a Country..." class="form-select form-select-solid select2-hidden-accessible" tabindex="-1" aria-hidden="true" data-kt-initialized="1" data-select2-id="select2-data-336-yfiz">
+                                <option value="" data-select2-id="select2-data-338-ev45">Select a Country...</option>
+                                                                    <option value="AF" data-select2-id="select2-data-345-z2kf">Afghanistan</option>
+                                                                    <option value="AX" data-select2-id="select2-data-346-2dqj">Aland Islands</option>
+                                                                    <option value="AL" data-select2-id="select2-data-347-olmd">Albania</option>
+                                                               
+                                                            </select><span class="select2 select2-container select2-container--bootstrap5 select2-container--above" dir="ltr" data-select2-id="select2-data-337-lett" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--single form-select form-select-solid" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-country-mc-container" aria-controls="select2-country-mc-container"><span class="select2-selection__rendered" id="select2-country-mc-container" role="textbox" aria-readonly="true" title="Select a Country..."><span class="select2-selection__placeholder">Select a Country...</span></span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                      
+                        <div class="d-flex flex-column mb-5 fv-row fv-plugins-icon-container">
+                            
+                            <label class="required fs-5 fw-semibold mb-2">Address Line 1</label>
+                            
+        
+                            <input class="form-control form-control-solid" placeholder="" name="address1">
+                            
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                       
+                        
+                        <div class="d-flex flex-column mb-5 fv-row fv-plugins-icon-container">
+                           
+                            <label class="required fs-5 fw-semibold mb-2">Address Line 2</label>
+                           
+                            
+                            <input class="form-control form-control-solid" placeholder="" name="address2">
+                           
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                        
+                        
+                        <div class="d-flex flex-column mb-5 fv-row fv-plugins-icon-container">
+                          
+                            <label class="fs-5 fw-semibold mb-2">Town</label>
+                          
+                            
+                            <input class="form-control form-control-solid" placeholder="" name="city">
+                            
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                        
+                        
+                        <div class="row g-9 mb-5">
+                            
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                                
+                                
+                                <label class="fs-5 fw-semibold mb-2">State / Province</label>
+                                
+                                
+                                <input class="form-control form-control-solid" placeholder="" name="state">
+                              
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                            
+                            
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                                
+                                <label class="fs-5 fw-semibold mb-2">Post Code</label>
+                               
+                                
+                                <input class="form-control form-control-solid" placeholder="" name="postcode">
+                               
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                           
+                        </div>
+
+                        <div class="fv-row mb-5">
+                            
+                            <div class="d-flex flex-stack">
+                                
+                                <div class="me-5">
+                                    
+                                    <label class="fs-5 fw-semibold">Use as a billing adderess?</label>
+                                    
+                                                               
+                                    <div class="fs-7 fw-semibold text-muted">If you need more info, please check budget planning</div>
+                                  
+                                </div>
+                                
+                                <label class="form-check form-switch form-check-custom form-check-solid">
+                                   
+                                    <input class="form-check-input" name="billing" type="checkbox" value="1" checked="checked">
+                                 
+                                    
+                                    <span class="form-check-label fw-semibold text-muted">
+                                        Yes
+                                    </span>
+                                    
+                                </label>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                    <div class= "row">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="indicator-label">
+                                Submit
+                            </span>
+                            <span class="indicator-progress">
+                                Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+
+                    </div>
+                    
+                </div>
+                
+                
+            </form>
+            
+        </div>
+        
+        <div>
+        </div>
+
+
+
+
+
+{% endblock %}

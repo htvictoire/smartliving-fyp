@@ -1,0 +1,176 @@
+<!--begin::sidebar-panel-->
+<div
+  id="kt_app_sidebar_panel"
+  class="app-sidebar-panel"
+  data-kt-drawer="true"
+  data-kt-drawer-name="app-sidebar-panel"
+  data-kt-drawer-activate="{default: true, lg: false}"
+  data-kt-drawer-overlay="true"
+  data-kt-drawer-width="280px"
+  data-kt-drawer-direction="start"
+  data-kt-drawer-toggle="#kt_app_sidebar_panel_toggle"
+>
+  <div
+    class="d-flex flex-column flex-grow-1 gap-7 my-4 my-8 px-5 hover-scroll-y me-3"
+    data-kt-scroll="true"
+    data-kt-scroll-height="auto"
+    data-kt-scroll-offset="5px"
+  >  
+  
+  {% for pin in fav_pins %}
+    <div class="d-flex align-items-center position-relative">
+      
+  
+      <div
+        class="card border border-dashed d-flex flex-column p-6 gap-10 flex-grow-1 mb-2 ms-4"
+      >
+        
+    {% if pin.state == 1 %}
+    <div class="d-flex flex-stack">
+      
+      <div
+        class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity"
+        style=" background: green"
+        >
+        <svg
+          version="1.1"
+          id="L9"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 100 100"
+          enable-background="new 0 0 0 0"
+          xml:space="preserve"
+        >
+          <rect x="40" y="35" width="4" height="10" fill="#fff">
+            <animateTransform
+              attributeType="xml"
+              attributeName="transform"
+              type="translate"
+              values="0 0; 0 20; 0 0"
+              begin="0"
+              dur="0.6s"
+              repeatCount="indefinite"
+            />
+          </rect>
+          <rect x="50" y="35" width="4" height="10" fill="#fff">
+            <animateTransform
+              attributeType="xml"
+              attributeName="transform"
+              type="translate"
+              values="0 0; 0 20; 0 0"
+              begin="0.2s"
+              dur="0.6s"
+              repeatCount="indefinite"
+            />
+          </rect>
+          <rect x="60" y="35" width="4" height="10" fill="#fff">
+            <animateTransform
+              attributeType="xml"
+              attributeName="transform"
+              type="translate"
+              values="0 0; 0 20; 0 0"
+              begin="0.4s"
+              dur="0.6s"
+              repeatCount="indefinite"
+            />
+          </rect>
+        </svg>
+      </div>
+
+      <span
+        class="rounded text-success fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity"
+      >
+        Running
+      </span>
+    </div>
+
+    {% else %}
+    <div class="d-flex flex-stack">
+      
+      <div
+        class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity"
+        style=" background: blue"
+        >
+        <svg
+          version="1.1"
+          id="L9"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 100 100"
+          enable-background="new 0 0 0 0"
+          xml:space="preserve"
+        >
+          <rect x="35" y="40" width="4" height="20" fill="#fff"> </rect>
+          <rect x="50" y="40" width="4" height="20" fill="#fff"> </rect>
+          <rect x="65" y="40" width="4" height="20" fill="#fff"> </rect>
+        </svg>
+      </div>
+
+      <span
+        class="rounded text-primary fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity"
+        >
+      
+        Not Running
+      </span>
+    </div>
+
+    {% endif %}
+                            
+    <div class="d-flex flex-stack">
+      
+            
+        <div class="d-flex flex-column">
+          <span class="fs-base text-gray-500">{{pin.board.place}}/{{pin.board.nom}} </span>
+          <span class="fs-6 fw-bold text-gray-800">
+            <span> {{pin.nom}} | {% if pin.manager %}<a class = " {% if pin.state == 1 %} text-success {% else %} text-primary {% endif %}" href= "{% url "manage_pin" pin.id %}"> Manage </a>{% endif %}</span>
+          </span>
+        </div>
+        <div class="form-check form-switch form-check-custom form-check-solid">
+          <input class="form-check-input h-25px w-45px" type="checkbox" value="1" >
+        </div>
+    </div>
+
+
+
+
+      </div>
+    </div>
+
+      
+
+
+    {% endfor %}
+
+  </div>
+
+  <button
+    class="app-sidebar-panel-toggle btn btn-icon text-gray-300 position-absolute translate-y-middle z-index-1 start-100 end-0 bottom-50 d-none d-lg-flex mb-4"
+    data-kt-toggle="true"
+    data-kt-toggle-state="active"
+    data-kt-toggle-target="body"
+    data-kt-toggle-name="app-sidebar-panel-collapse"
+  >
+    <svg
+      width="24"
+      height="130"
+      viewBox="0 0 24 130"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1.38462 18.7168L1.8301 22.7112C2.26003 26.5663 4.27932 30.0671 7.40111 32.3694V32.3694C11.5512 35.4301 14.0007 40.2802 14.0007 45.4369V82.4101C14.0007 87.7445 11.5406 92.7807 7.33313 96.0597V96.0597C4.30939 98.4163 2.31544 101.852 1.76936 105.646L1.31152 108.828"
+        stroke="currentColor"
+        stroke-width="1"
+      />
+      <path
+        d="M1 21V21.1546C1 22.0457 1.14367 22.931 1.42547 23.7764L1.47964 23.9389C1.4932 23.9796 1.50962 24.0192 1.52879 24.0576C1.83879 24.6776 2.00233 25.3605 2.0068 26.0536L2.48837 100.697C2.49595 101.872 2.15172 103.022 1.5 104L1.48049 104.039C1.32729 104.345 1.20808 104.668 1.125 105L1 106V103.821V21Z"
+        fill="var(--bs-app-sidebar-panel-base-bg-color)"
+      />
+    </svg>
+
+    <i
+      class="ki-outline ki-left position-absolute top-50 me-3 left-0 translate-y-middle rotate-180 lh-0 fs-3"
+    ></i>
+  </button>
+</div>
+<!--end::sidebar-panel-->

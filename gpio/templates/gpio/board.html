@@ -1,0 +1,65 @@
+
+
+
+
+{% extends 'accounts/base.html' %}  {% load static %}
+
+        {% block title %}{{title}}{% endblock title %}
+        {% block description %}{{description}}{% endblock description %}
+     
+        {% block main %}
+
+        
+            <form method="post" >
+                {% csrf_token %}
+                <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
+                                              
+                        <div class="mb-5 fv-row">
+                                
+                            <label class="required fs-5 fw-semibold mb-2">Antity Location</label>
+                            
+                            {{form.place}}
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                    
+                        <div class="row mb-5">
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                                
+                                <label class="required fs-5 fw-semibold mb-2">Name</label>
+                                    
+                                {{form.nom}}
+                                
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                           
+                            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                               
+                                <label class="required fs-5 fw-semibold mb-2">Antity Code</label>
+                                {{form.code}}
+                                
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                          
+                        </div>
+                        
+                    <div class= "row">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="indicator-label">
+                                Submit
+                            </span>
+                        </button>
+
+                    </div>
+                    
+                </div>
+                
+                
+            </form>
+            
+        </div>
+        
+        <div>
+        </div>
+
+
+
+
+
+{% endblock %}

@@ -145,7 +145,7 @@
                                 </span>
                               </div>
                               <div class="form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input h-25px w-45px" type="checkbox" value="1" >
+                                <input class="form-check-input h-25px w-45px" type="checkbox" data-pin-id="{{ pin.id }}"  {% if pin.state == 1 %}checked{% endif %} >
                               </div>
                           </div>
                         </div>
@@ -171,6 +171,78 @@
 
 
 
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var pinId = '{{ pin.id }}';
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/pins/' + pinId + '/');
 
+    socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var isChecked = data.state === 1;
+        var checkbox = document.querySelector(`input[data-pin-id="${pinId}"]`);
+        if (checkbox) {
+            checkbox.checked = isChecked;
+        }
+    };
+
+    socket.onopen = function(e) {
+        console.log('WebSocket connection established');
+    };
+
+    socket.onclose = function(e) {
+        console.log('WebSocket connection closed');
+    };
+
+    document.querySelectorAll('.form-check-input').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            var pinId = checkbox.getAttribute('data-pin-id');
+            var isChecked = checkbox.checked;
+            var state = isChecked ? 1 : 0;
+
+            fetch(isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({'pin_id': pinId})
+            }).then(response => response.json()).then(data => {
+                socket.send(JSON.stringify({'state': state}));
+            }).catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
+
+
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+        $(document).ready(function() {
+            // Handle checkbox change events
+            $('.form-check-input').change(function() {
+                var pinId = $(this).data('pin-id');
+                var isChecked = $(this).is(':checked');
+                var url = isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}';
+        
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        'pin_id': pinId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF token for POST requests
+                    },
+                    success: function(response) {
+                        // Handle success (if needed)
+                        console.log('State changed successfully:', response);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        // Handle error (if needed)
+                        console.log('Error:', errmsg);
+                    }
+                });
+            });
+        });
+        </script>
 
 {% endblock %}

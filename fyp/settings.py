@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'accounts',
     'gpio',
 
+    #third party apps
+    'channels',
+
 ]
 
 MIDDLEWARE = [
@@ -201,5 +204,14 @@ SERVER_EMAIL = ADMIN_EMAIL
 DOMAIN = getenv('DOMAIN')  ## Next server
 SITE_NAME = "I'LL CHOOSE"
 
+# CHANNELS
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 ##################################################################################################################################

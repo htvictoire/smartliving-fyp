@@ -21,6 +21,12 @@ urlpatterns = [
     path('my-places/', PlacesView.as_view(), name='my_places'),
     path('create/place', CreatePlaceView.as_view(), name='create_antity'),
     path('manage/place/<int:place_id>', ManagePlaceView.as_view(), name='manage_page'),
+
+
+
+
+    path('pin/switch_on/', views.switch_on, name='switch_on'),
+    path('pin/switch_off/', views.switch_off, name='switch_off'),
 ]
 
 

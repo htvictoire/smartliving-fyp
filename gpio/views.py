@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from .models import Board, Pins, Messages, Places
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.views import get_fav_bar, get_nav_bar
@@ -22,9 +23,9 @@ def etat_outputs(request, board_id):
 
 
 @csrf_exempt
-def etat_outputs(request, board_id):
+def etat_outputs(request, board_code):
     if request.method == 'GET':
-        outputs = Pins.objects.filter(board__numero=board_id)
+        outputs = Pins.objects.filter(board__code=board_code)
         output_states = [
             {
                 'gpio': output.gpio,
@@ -43,6 +44,36 @@ def messages(request):
         messagess = {message.recipient: str(message.message) for message in messages_}
         return JsonResponse(messagess)
 '''
+
+
+@csrf_exempt
+@require_POST
+def switch_on(request):
+    pin_id = request.POST.get('pin_id')
+    try:
+        pin = Pins.objects.get(id=pin_id)
+        pin.state = 1
+        pin.save()
+        return JsonResponse({'status': 'success', 'state': pin.state})
+    except Pins.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
+
+@csrf_exempt
+@require_POST
+def switch_off(request):
+    pin_id = request.POST.get('pin_id')
+    try:
+        pin = Pins.objects.get(id=pin_id)
+        pin.state = 0
+        pin.save()
+        return JsonResponse({'status': 'success', 'state': pin.state})
+    except Pins.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
+
+
+
+
+
 def messages(request):
     if request.method == 'GET':
         messages_ = Messages.objects.filter(sent=False)
@@ -56,6 +87,9 @@ def messages(request):
             for message in messages_
         ]
         return JsonResponse(messagess, safe=False)
+
+
+
 
 
 @csrf_exempt

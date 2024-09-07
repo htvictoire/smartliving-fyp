@@ -1,248 +1,156 @@
 {% extends 'accounts/base.html' %}  {% load static %}
 
+{% block active %}
+    {% if active_place %}
+    <span class="menu-link">
+        <span class="menu-title">{{active_place}}</span>
+        <span class="menu-arrow"></span>
+    </span>
+    {% endif %}
+{% endblock active %}
 
-        {% block active %}
-        {% if active_place %}
-        <span class="menu-link"
-        ><span class="menu-title">{{active_place}}</span
-          ><span class="menu-arrow"></span></span>
-        
-        {% endif %}
-        {% endblock active %}
-
-        {% block main %}
-          <!--begin::Main-->
-          <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-            <!--begin::Content wrapper-->
-            <div class="d-flex flex-column flex-column-fluid">
-              <!--begin::Content-->
-              <div id="kt_app_content" class="app-content flex-column-fluid">
-                <!--begin::Content container-->
-                <div
-                  id="kt_app_content_container"
-                  class="app-container container-fluid"
-                >
-                  
-
-                  <!--begin::Row-->
-                  <div class="row g-5 g-xl-10 g-xl-10">
-
-
-
-                    
-
-
-
-
+{% block main %}
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <!--begin::Content wrapper-->
+    <div class="d-flex flex-column flex-column-fluid">
+        <!--begin::Content-->
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <!--begin::Content container-->
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                <!--begin::Row-->
+                <div class="row g-5 g-xl-10 g-xl-10">
                     {% for pin in pins %}
                     <div class="col-xl-6 mb-xl-10">
-              
-                      <div class="d-flex align-items-center position-relative">
-        
-                        <div
-                          class="card border border-dashed d-flex flex-column p-6 gap-10 flex-grow-1 mb-2 ms-4"
-                        >
-
-
-                          {% if pin.state == 1 %}
-                          <div class="d-flex flex-stack">
-                            
-                            <div
-                              class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity"
-                              style=" background: green"
-                              >
-                              <svg
-                                version="1.1"
-                                id="L9"
-                                xmlns="http://www.w3.org/2000/svg"
-                                xmlns:xlink="http://www.w3.org/1999/xlink"
-                                viewBox="0 0 100 100"
-                                enable-background="new 0 0 0 0"
-                                xml:space="preserve"
-                              >
-                                <rect x="40" y="35" width="4" height="10" fill="#fff">
-                                  <animateTransform
-                                    attributeType="xml"
-                                    attributeName="transform"
-                                    type="translate"
-                                    values="0 0; 0 20; 0 0"
-                                    begin="0"
-                                    dur="0.6s"
-                                    repeatCount="indefinite"
-                                  />
-                                </rect>
-                                <rect x="50" y="35" width="4" height="10" fill="#fff">
-                                  <animateTransform
-                                    attributeType="xml"
-                                    attributeName="transform"
-                                    type="translate"
-                                    values="0 0; 0 20; 0 0"
-                                    begin="0.2s"
-                                    dur="0.6s"
-                                    repeatCount="indefinite"
-                                  />
-                                </rect>
-                                <rect x="60" y="35" width="4" height="10" fill="#fff">
-                                  <animateTransform
-                                    attributeType="xml"
-                                    attributeName="transform"
-                                    type="translate"
-                                    values="0 0; 0 20; 0 0"
-                                    begin="0.4s"
-                                    dur="0.6s"
-                                    repeatCount="indefinite"
-                                  />
-                                </rect>
-                              </svg>
+                        <div class="d-flex align-items-center position-relative">
+                            <div class="card border border-dashed d-flex flex-column p-6 gap-10 flex-grow-1 mb-2 ms-4" id="pin-{{pin.id}}">
+                                <div class="d-flex flex-stack">
+                                    <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" id="pin-svg-{{pin.id}}" style="background: {% if pin.state == 1 %} green {% else %} blue {% endif %}">
+                                        <!-- SVGs go here -->
+                                    </div>
+                                    <span id="pin-status-{{pin.id}}" class="rounded {% if pin.state == 1 %} text-success {% else %} text-primary {% endif %} fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity">
+                                        {% if pin.state == 1 %} Running {% else %} Not Running {% endif %}
+                                    </span>
+                                </div>
+                                <div class="d-flex flex-stack">
+                                    <div class="d-flex flex-column">
+                                        <span class="fs-base text-gray-500">{{pin.board.place}}/{{pin.board.nom}} </span>
+                                        <span class="fs-6 fw-bold text-gray-800">
+                                            <span>{{pin.nom}} | {% if pin.manager %}
+                                                <a id="manage-btn-{{pin.id}}" class="{% if pin.state == 1 %} text-success {% else %} text-primary {% endif %}" href="{% url 'manage_pin' pin.id %}">Manage</a>
+                                            {% endif %}</span>
+                                        </span>
+                                    </div>
+                                    <div class="form-check form-switch form-check-custom form-check-solid">
+                                        <input id="pin-checkbox-{{pin.id}}" class="form-check-input h-25px w-45px" type="checkbox" data-pin-id="{{pin.id}}" {% if pin.state == 1 %} checked {% endif %}>
+                                    </div>
+                                </div>
                             </div>
-        
-                            <span
-                              class="rounded text-success fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity"
-                            >
-                              Running
-                            </span>
-                          </div>
-        
-                          {% else %}
-                          <div class="d-flex flex-stack">
-                            
-                            <div
-                              class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity"
-                              style=" background: blue"
-                              >
-                              <svg
-                                version="1.1"
-                                id="L9"
-                                xmlns="http://www.w3.org/2000/svg"
-                                xmlns:xlink="http://www.w3.org/1999/xlink"
-                                viewBox="0 0 100 100"
-                                enable-background="new 0 0 0 0"
-                                xml:space="preserve"
-                              >
-                                <rect x="35" y="40" width="4" height="20" fill="#fff"> </rect>
-                                <rect x="50" y="40" width="4" height="20" fill="#fff"> </rect>
-                                <rect x="65" y="40" width="4" height="20" fill="#fff"> </rect>
-                              </svg>
-                            </div>
-        
-                            <span
-                              class="rounded text-primary fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity"
-                              >
-                            
-                              Not Running
-                            </span>
-                          </div>
-
-                          {% endif %}
-                            
-                          <div class="d-flex flex-stack">
-                            
-                                  
-                              <div class="d-flex flex-column">
-                                <span class="fs-base text-gray-500">{{pin.board.place}}/{{pin.board.nom}} </span>
-                                <span class="fs-6 fw-bold text-gray-800">
-                                  <span> {{pin.nom}} | {% if pin.manager %}<a class = " {% if pin.state == 1 %} text-success {% else %} text-primary {% endif %}" href= "{% url "manage_pin" pin.id %}"> Manage </a>{% endif %}</span>
-                                </span>
-                              </div>
-                              <div class="form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input h-25px w-45px" type="checkbox" data-pin-id="{{ pin.id }}"  {% if pin.state == 1 %}checked{% endif %} >
-                              </div>
-                          </div>
                         </div>
-                      </div>
-        
                     </div>
-                    
-
                     {% endfor %}
-
-
-              
-                  </div>
-                  <!--end::Row-->
                 </div>
-                <!--end::Content container-->
-              </div>
-              <!--end::Content-->
+                <!--end::Row-->
             </div>
-            <!--end::Content wrapper-->
-            {% include "accounts/footer.html" %}
+            <!--end::Content container-->
         </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Content wrapper-->
+    {% include "accounts/footer.html" %}
+</div>
 
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('.form-check-input').change(function() {
+        var pinId = $(this).data('pin-id');
+        var isChecked = $(this).is(':checked');
+        var url = isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}';
 
-
-        <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var pinId = '{{ pin.id }}';
-    var socket = new WebSocket('ws://' + window.location.host + '/ws/pins/' + pinId + '/');
-
-    socket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
-        var isChecked = data.state === 1;
-        var checkbox = document.querySelector(`input[data-pin-id="${pinId}"]`);
-        if (checkbox) {
-            checkbox.checked = isChecked;
-        }
-    };
-
-    socket.onopen = function(e) {
-        console.log('WebSocket connection established');
-    };
-
-    socket.onclose = function(e) {
-        console.log('WebSocket connection closed');
-    };
-
-    document.querySelectorAll('.form-check-input').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            var pinId = checkbox.getAttribute('data-pin-id');
-            var isChecked = checkbox.checked;
-            var state = isChecked ? 1 : 0;
-
-            fetch(isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({'pin_id': pinId})
-            }).then(response => response.json()).then(data => {
-                socket.send(JSON.stringify({'state': state}));
-            }).catch(error => console.error('Error:', error));
+        $.ajax({
+            url: url,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ 'pin_id': pinId }),
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            success: function(response) {
+                console.log('State changed successfully:', response);
+            },
+            error: function(xhr, errmsg, err) {
+                console.log('Error:', errmsg);
+            }
         });
     });
+
+    // Periodic updates
+    setInterval(function() {
+        $('.form-check-input').each(function() {
+            var pinId = $(this).data('pin-id');
+            $.ajax({
+                url: '{% url "check_pin_state" %}',
+                type: 'GET',
+                data: { 'pin_id': pinId },
+                success: function(response) {
+                    var pinState = response.state;
+                    var pinCard = $('#pin-' + pinId);
+                    var statusText = pinState === 1 ? 'Running' : 'Not Running';
+                    var statusColor = pinState === 1 ? 'green' : 'blue';
+                    var textColor = pinState === 1 ? 'text-success' : 'text-primary';
+                    
+                    // Update checkbox
+                    $('#pin-checkbox-' + pinId).prop('checked', pinState === 1);
+                    
+                    // Update status and manage button dynamically
+                    pinCard.find('#pin-status-' + pinId).removeClass().addClass('rounded ' + textColor + ' fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity').text(statusText);
+                    pinCard.find('#pin-svg-' + pinId).css('background', statusColor);
+                    pinCard.find('#manage-btn-' + pinId).removeClass().addClass(textColor);
+
+                    
+                    if (pinState === 1) {
+                        
+                        // Update SVG and status text for Running
+                        $('input[data-pin-id="' + pinId + '"]').closest('.card').find('.d-flex.flex-stack').first().html(`
+                            <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" style="background: green">
+                                <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+                                    <rect x="40" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="50" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="60" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                </svg>
+                            </div>
+                            <span class="rounded text-success fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity">
+                                Running
+                            </span>
+                        `);
+                    } else {
+                        $('input[data-pin-id="' + pinId + '"]').closest('.card').find('.d-flex.flex-stack').first().html(`
+                            <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" style="background: blue">
+                                <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+                                    <rect x="35" y="40" width="4" height="20" fill="#fff"> </rect>
+                                    <rect x="50" y="40" width="4" height="20" fill="#fff"> </rect>
+                                    <rect x="65" y="40" width="4" height="20" fill="#fff"> </rect>
+                                </svg>
+                            </div>
+                            <span class="rounded text-primary fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity">
+                                Not Running
+                            </span>
+                        `);
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log('Error:', errmsg);
+                }
+            });
+        });
+    }, 5000); // 1 second interval
 });
 </script>
 
-
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-        $(document).ready(function() {
-            // Handle checkbox change events
-            $('.form-check-input').change(function() {
-                var pinId = $(this).data('pin-id');
-                var isChecked = $(this).is(':checked');
-                var url = isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}';
-        
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: {
-                        'pin_id': pinId,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF token for POST requests
-                    },
-                    success: function(response) {
-                        // Handle success (if needed)
-                        console.log('State changed successfully:', response);
-                    },
-                    error: function(xhr, errmsg, err) {
-                        // Handle error (if needed)
-                        console.log('Error:', errmsg);
-                    }
-                });
-            });
-        });
-        </script>
 
 {% endblock %}

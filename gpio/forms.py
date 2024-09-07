@@ -8,11 +8,10 @@ from .models import Board, Places, Pins
 class PinForm(forms.ModelForm):
     class Meta:
         model = Pins
-        fields = ['nom', 'board', 'fav', 'gpio']
+        fields = ['nom', 'board', 'gpio']
         widgets = {
             'nom': forms.TextInput(attrs={'class': 'form-control form-control-solid'}),
-            'gpio': forms.NumberInput(attrs={'class': 'form-control form-control-solid'}),
-            'fav': forms.CheckboxInput(attrs={'class' :"form-check-input" , 'type':"checkbox"}),
+            'gpio': forms.Select(attrs={'class': 'form-control form-control-solid'}),
             'board': forms.Select(attrs={'class': 'form-control form-control-solid'})
         }
 
@@ -21,8 +20,8 @@ class PinForm(forms.ModelForm):
 
         if user:
             boards = []
-            boards.extend(user.boards.filter(available_pin=True))
-            boards.extend( Board.objects.filter(place__in = user.places.all(), available_pin=True).exclude(id__in = [b.id for b in boards]))
+            boards.extend(user.boards.all())
+            boards.extend( Board.objects.filter(place__in = user.places.all()).exclude(id__in = [b.id for b in boards]))
             boards = Board.objects.filter(id__in = [b.id for b in boards])
             self.fields['board'].queryset = boards
 

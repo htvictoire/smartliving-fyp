@@ -89,13 +89,22 @@ class UserActivity(models.Model):    # pour ajouter a record for each action in 
 class Favorites(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pin  = models.ForeignKey(Pins, on_delete=models.CASCADE)
-    update_time = models.TimeField( auto_now=False, auto_now_add=False, null=True)
+    update_time = models.TimeField( auto_now=True, null=True)
 
     def __str__(self) :
         return f'{self.user}-{self.pin}'
 
 
 
+
+
+
+class Messages(models.Model):
+    message = models.TextField()
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE)
+    sent = models.BooleanField(default=False)
+    user_code = models.CharField(max_length=100, null=True, blank=False) # To pass to the link in the esp32 
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 

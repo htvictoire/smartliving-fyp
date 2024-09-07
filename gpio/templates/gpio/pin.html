@@ -1,96 +1,85 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
 
+{% block title %}{{title}}{% endblock title %}
+{% block description %}{{description}}{% endblock description %}
 
+{% block main %}
+<form method="post">
+    {% csrf_token %}
+    <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
+        <div class="mb-5 fv-row">
+            <label class="required fs-5 fw-semibold mb-2">Antity</label>
+            {{ form.board }}
+            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+        </div>
 
-
-{% extends 'accounts/base.html' %}  {% load static %}
-
-        {% block title %}{{title}}{% endblock title %}
-        {% block description %}{{description}}{% endblock description %}
-     
-        {% block main %}
-
-        
-            <form method="post" >
-                {% csrf_token %}
-                <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
-                                              
-                        <div class="mb-5 fv-row">
-                                
-                            <label class="required fs-5 fw-semibold mb-2">Antity</label>
-                            
-                            {{form.board}}
-                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                    
-                        <div class="row mb-5">
-                            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                                
-                                <label class="required fs-5 fw-semibold mb-2">Name</label>
-                                    
-                                {{form.nom}}
-                                
-                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                           
-                            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                               
-                                <label class="required fs-5 fw-semibold mb-2">Port Number</label>
-                                {{form.gpio}}
-                                
-                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
-                          
-                        </div>
-                        <div class="fv-row mb-5">
-                            
-                            <div class="d-flex flex-stack">
-                                
-                                <div class="me-5">
-                                    
-                                    <label class="fs-5 fw-semibold">Make it a favorite object?</label>
-                                    
-                                                               
-                                    <div class="fs-7 fw-semibold text-muted">If yes it will display in favorite tab</div>
-                                  
-                                </div>
-                                
-                                <label class="form-check form-switch form-check-custom form-check-solid">
-                                   
-                                    {{form.fav}}
-                                 
-                                    
-                                    <span class="form-check-label fw-semibold text-muted">
-                                        Yes
-                                    </span>
-                                    
-                                </label>
-                                
-                            </div>
-                        
-
-                        </div>
-                        
-                    <div class= "row">
-                        <button type="submit" class="btn btn-primary">
-                            <span class="indicator-label">
-                                Submit
-                            </span>
-                            <span class="indicator-progress">
-                                Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                            </span>
-                        </button>
-
-                    </div>
-                    
+        <div class="row mb-5">
+            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                <label class="required fs-5 fw-semibold mb-2">Name</label>
+                {{ form.nom }}
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                <label class="required fs-5 fw-semibold mb-2">Port Number</label>
+                {{ form.gpio }}
+                <div id="gpio-message" class="text-danger"></div>
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="fv-row mb-5">
+            <div class="d-flex flex-stack">
+                <div class="me-5">
+                    <label class="fs-5 fw-semibold">Make it a favorite object?</label>
+                    <div class="fs-7 fw-semibold text-muted">If yes it will display in favorite tab</div>
                 </div>
-                
-                
-            </form>
-            
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input type="checkbox" class="form-check-input" {% if fav_check %}checked{% endif %}  name="favorite"  id="favorite" />
+                    <span class="form-check-label fw-semibold text-muted">Yes</span>
+                </label>
+            </div>
         </div>
-        
-        <div>
+        <div class="row">
+            <button type="submit" class="btn btn-primary">
+                <span class="indicator-label">Submit</span>
+            </button>
         </div>
+    </div>
+</form>
 
-
-
-
-
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#id_board').change(function() {
+            var boardId = $(this).val();
+            $.ajax({
+                url: "{% url 'get_available_gpios' %}",
+                type: "POST",
+                data: {
+                    'board_id': boardId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.available_gpios) {
+                        var gpioField = $('#id_gpio');
+                        gpioField.empty();  // Clear previous options
+                        $.each(response.available_gpios, function(key, value) {
+                            gpioField.append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                        $('#gpio-message').text('');  // Clear any previous message
+                    } else if (response.message) {
+                        $('#gpio-message').text(response.message);
+                        $('#id_gpio').empty();  // Clear GPIO options
+                    }
+                },
+                error: function() {
+                    $('#gpio-message').text('An error occurred while fetching GPIO options.');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

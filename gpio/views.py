@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .models import Board, Pins, Messages, Places
+from .models import Board, Pins, Places
+from accounts.models import Messages, Favorites
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.views import get_fav_bar, get_nav_bar
 from .forms import PinForm, PlaceForm, AntityForm
@@ -12,6 +13,8 @@ from accounts.models import User
 
 import random
 
+
+import json
 '''
 @csrf_exempt
 def etat_outputs(request, board_id):
@@ -36,6 +39,26 @@ def etat_outputs(request, board_code):
         ]
         return JsonResponse(output_states, safe=False)
 
+
+
+def messages(request):
+    if request.method == 'GET':
+        messages = Messages.objects.filter(sent=False)
+        messagess = [
+            {
+                'recipient': message.recipient,
+                'message': str(message.message),
+                'id': str(message.id)
+
+            }
+            for message in messages
+        ]
+        for m in messages:
+            m.sent = True
+            m.save()
+        return JsonResponse(messagess, safe=False)
+
+
 '''
 @csrf_exempt
 def messages(request):
@@ -46,47 +69,55 @@ def messages(request):
 '''
 
 
+
+# render all messages 
+
+
+
+
+
+
+# for ui auto update
+def check_pin_state(request):
+    pin_id = request.GET.get('pin_id')
+    pin = get_object_or_404(Pins, id=pin_id)
+    return JsonResponse({'state': pin.state})
+
+
+
+
 @csrf_exempt
 @require_POST
 def switch_on(request):
-    pin_id = request.POST.get('pin_id')
     try:
+        data = json.loads(request.body.decode('utf-8'))
+        pin_id = data.get('pin_id')
         pin = Pins.objects.get(id=pin_id)
         pin.state = 1
         pin.save()
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
+    except (KeyError, json.JSONDecodeError):
+        return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
 
 @csrf_exempt
 @require_POST
 def switch_off(request):
-    pin_id = request.POST.get('pin_id')
     try:
+        data = json.loads(request.body.decode('utf-8'))
+        pin_id = data.get('pin_id')
         pin = Pins.objects.get(id=pin_id)
         pin.state = 0
         pin.save()
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
+    except (KeyError, json.JSONDecodeError):
+        return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
+    
 
 
-
-
-
-def messages(request):
-    if request.method == 'GET':
-        messages_ = Messages.objects.filter(sent=False)
-        messagess = [
-            {
-                'recipient': message.recipient,
-                'message': str(message.message),
-                'id': str(message.id)
-
-            }
-            for message in messages_
-        ]
-        return JsonResponse(messagess, safe=False)
 
 
 
@@ -96,6 +127,7 @@ def messages(request):
 def update_messages(request, message_id):
     message = Messages.objects.get(id=message_id)
     message.sent = True
+
 
 
 
@@ -157,7 +189,7 @@ class PinsView(BaseView):
         else:
             for pin in self.user.pins.filter(board=board):
                 board_pins.append(pin)
-                p.manager = False
+                pin.manager = False
 
         self.context.update({
             "pin_is_active" : True,
@@ -166,6 +198,37 @@ class PinsView(BaseView):
         })
         return render(request, self.template_name, self.context)
 
+
+
+@csrf_exempt
+def get_available_gpios(request):
+    if request.method == 'POST':
+        board_id = request.POST.get('board_id')
+        try:
+            board = Board.objects.get(id=board_id)
+        except Board.DoesNotExist:
+            return JsonResponse({'error': 'Board not found'}, status=404)
+
+        # Get all GPIO pins already used on the selected board
+        used_gpios = Pins.objects.filter(board=board).values_list('gpio', flat=True)
+        
+        # Define all possible GPIO options
+        GPIO_CHOICES = {
+            1: "12",
+            2: "16",
+            3: "22",
+            4: "28",
+            5: "34",
+        }
+
+        # Filter out GPIOs that are already used
+        available_gpios = {key: value for key, value in GPIO_CHOICES.items() if key not in used_gpios}
+        
+        if not available_gpios:
+            return JsonResponse({'message': 'No available GPIO pins on this board'}, status=200)
+
+        return JsonResponse({'available_gpios': available_gpios}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
 
@@ -194,11 +257,17 @@ class CreatePinView(BaseView):
             return redirect('login')
 
         form = self.form_class(request.POST, user=self.user)
+        favorite = request.POST.get('favorite', False)
         if form.is_valid():
             pin = form.save(commit=False)
             pin.state = 0
             pin.save()
-            return redirect('objects')
+            if favorite:
+                Favorites.objects.create(user=self.user, pin=pin) # Random number
+                _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
+                if len(_favs ) > 5:
+                    _favs.last().delete()
+            return redirect('objects', board_id=pin.board.id)
         return self.get(request)
 
 
@@ -219,10 +288,11 @@ class ManagePinView(BaseView):
 
         self.get_nav_and_fav_pins()
         form = self.form_class(instance=pin, user=self.user)
+        fav_check = Favorites.objects.filter(user=self.user, pin=pin).exists()
         self.context.update({
             "pin_is_active" : True,
             'form': form,
-            'pin_is_active': True,
+            'fav_check' : fav_check,
             'title': f"Manage {pin.nom} from {pin.board.nom}",
             'description': "blablaba balab dvhfw",
         })
@@ -234,9 +304,22 @@ class ManagePinView(BaseView):
             return redirect('dashboard')
 
         form = self.form_class(request.POST, instance=pin, user=self.user)
+        favorite = request.POST.get('favorite', False)
         if form.is_valid():
+            pin = form.save(commit=False)
+            pin.state = 0
+            pin.save()
+            if favorite:
+                is_fav_pin , created = Favorites.objects.get_or_create(user=self.user, pin=pin) # Random number
+                if created:
+                    _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
+                    if len(_favs ) > 5:
+                        _favs.last().delete()
+            else:
+                if Favorites.objects.filter(user=self.user, pin=pin).exists():
+                    Favorites.objects.filter(user=self.user, pin=pin).delete()
             form.save()
-            return redirect('objects')
+            return redirect('objects', board_id=pin.board.id)
         return self.get(request, pin_id=pin_id)
 
 
@@ -300,7 +383,7 @@ class CreateAntityView(BaseView):
         self.get_nav_and_fav_pins()
         form = self.form_class(user=self.user)
         self.context.update({
-            "board_is_active" : True,
+            "board_is_active": True,
             'form': form,
             'title': "Add an Antity",
             'description': "Add an Antity",
@@ -337,6 +420,7 @@ class ManageAntityView(BaseView):
         self.get_nav_and_fav_pins()
         form = self.form_class(instance=board, user=self.user)
         self.context.update({
+            "board_is_active": True,
             'form': form,
             'bord_is_active': True,
             'title': f"Manage {board.nom} from {board.place.nom}",

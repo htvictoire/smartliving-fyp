@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from gpio.models import Pins, Board, Messages, Places
-
+from gpio.models import Pins, Board, Places
+from accounts.models import Messages
 admin.site.register(Pins)
 admin.site.register(Places)
 admin.site.register(Board)

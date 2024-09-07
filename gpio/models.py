@@ -31,15 +31,14 @@ class Board(models.Model):   # Entities
 class Pins(models.Model):
     nom = models.CharField(max_length=255, null=True, blank=False)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    fav = models.BooleanField(default=False)
     GPIO_CHOICES = {
-        1 :"1",
-        2 :"2",
-        3 :"3",
-        4 :"4",
-        5 :"5",
+        1 :"12",
+        2 :"16",
+        3 :"22",
+        4 :"28",
+        5 :"34",
     }
-    gpio = models.IntegerField()
+    gpio = models.IntegerField(choices=GPIO_CHOICES, null=True, blank=False)
     state = models.IntegerField()
     
 
@@ -51,11 +50,3 @@ class Pins(models.Model):
 
 
 
-
-
-class Messages(models.Model):
-    message = models.TextField()
-    recipient = models.CharField(max_length=13)
-    sent = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)

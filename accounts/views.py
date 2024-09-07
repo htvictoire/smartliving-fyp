@@ -1,12 +1,11 @@
 
 
 from django.contrib import messages
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.contrib import messages
 from django.contrib.auth.models import  Group
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -17,7 +16,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import reverse_lazy , reverse
 from django.views import View
-from .models import User, Favorites
+from .models import User, Favorites, Messages
 from gpio.models import Places, Pins, Board
 from gpio.chekers import check_antity_manager, check_place_manager
 
@@ -30,8 +29,6 @@ Users = get_user_model # dont touch this dude
 
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
-from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -123,11 +120,19 @@ def get_nav_bar(user, board):
 def get_fav_bar(user): 
     fav_pins = [f.pin for f in Favorites.objects.filter(user=user).order_by('-update_time')[0:5]]
     for pin in fav_pins:
-        checker = check_antity_manager(user=user, antity=pin.board)
-        if checker == True:
+        checker, checkerr = check_antity_manager(user=user, antity=pin.board) , check_place_manager(user=user, place=pin.board.place)
+        if checker == True or checkerr == True:
             pin.manager = True
 
     return fav_pins
+
+
+
+def get_messages(user):
+    messages = [m for m in Messages.objects.filter(recipient=user).order_by('created_at')]
+    return messages
+
+
 
 
 def dashboard(request):
@@ -136,6 +141,10 @@ def dashboard(request):
     fav_pins = get_fav_bar(user)
     title = 'Dashboard'
     description = ''
+    messages = get_messages(user)
+    
+    for m in messages:
+        print(m.message)
 
     if isinstance(nav_context, tuple):
         nav_context = nav_context[0]
@@ -145,6 +154,7 @@ def dashboard(request):
         "fav_pins": fav_pins,
         'title' : title,
         'description' : description,
+        'messages' : messages,
     }
 
     context.update(nav_context)

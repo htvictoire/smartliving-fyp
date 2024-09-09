@@ -7,8 +7,8 @@ __pycache__/
 # Django
 #*.sqlite3
 #db.sqlite3
-media/
-staticfiles/
+#media/
+#staticfiles/
 
 # Environment
 .env

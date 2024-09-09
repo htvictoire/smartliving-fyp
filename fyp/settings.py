@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     #my apps
     'accounts',
     'gpio',
-
+    'energy',
+    
     #third party apps
     'channels',
 

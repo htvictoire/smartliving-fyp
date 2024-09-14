@@ -37,10 +37,11 @@ class Pins(models.Model):
     state = models.IntegerField()
     
     power = models.FloatField()
-    consom_max = models.FloatField(default=1000000000.0)
+    consom_max = models.FloatField(default=100000000000.0)
     last_on = models.DateTimeField(null=True, blank=True)
     last_off = models.DateTimeField(null=True, blank=True)
     control_mode = models.BooleanField(default=False)
+    today_limit_reached = models.BooleanField(default=False)
     class Meta:
         unique_together = ('board', 'gpio')
     

@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'gpio',
     'energy',
     
-    #third party apps
-    'channels',
 
 ]
 

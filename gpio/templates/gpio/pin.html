@@ -5,72 +5,241 @@
 {% block description %}{{description}}{% endblock description %}
 
 {% block main %}
-<form method="post">
-    {% csrf_token %}
-    <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
-        <div class="mb-5 fv-row">
-            <label class="required fs-5 fw-semibold mb-2">Antity</label>
-            {{ form.board }}
-            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-        </div>
 
-        <div class="row mb-5">
-            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                <label class="required fs-5 fw-semibold mb-2">Name</label>
-                {{ form.nom }}
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-            </div>
-            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                <label class="required fs-5 fw-semibold mb-2">Port Number</label>
-                {{ form.gpio }}
-                <div id="gpio-message" class="text-danger"></div>
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-            </div>
-            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                <label class="required fs-5 fw-semibold mb-2">Power</label>
-                {{ form.power }}
-                <div id="gpio-message" class="text-danger"></div>
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-            </div>
-            <div class="col-md-6 fv-row fv-plugins-icon-container">
-                <label class="required fs-5 fw-semibold mb-2">Maximum Energy Allowed</label>
-                {{ form.consom_max }}
-                <div id="gpio-message" class="text-danger"></div>
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-            </div>
-        </div>
-        <div class="fv-row mb-5">
-            <div class="d-flex flex-stack">
-                <div class="me-5">
-                    <label class="fs-5 fw-semibold">Make it a favorite object?</label>
-                    <div class="fs-7 fw-semibold text-muted">If yes it will display in favorite tab</div>
+
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <!--begin::Content wrapper-->
+    <div class="d-flex flex-column flex-column-fluid">
+      <!--begin::Content-->
+      <div id="kt_app_content" class="app-content flex-column-fluid">
+        <!--begin::Content container-->
+        
+        <form method="post" class="app-container container-fluid">
+            {% csrf_token %}
+            <div class="" data-select2-id="select2-data-341-gjf8">
+                <div class="mb-5 fv-row">
+                    <label class="required fs-5 fw-semibold mb-2">Antity</label>
+                    {{ form.board }}
+                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                 </div>
-                <label class="form-check form-switch form-check-custom form-check-solid">
-                    <input type="checkbox" class="form-check-input" {% if fav_check %}checked{% endif %}  name="favorite"  id="favorite" />
-                    <span class="form-check-label fw-semibold text-muted">Yes</span>
-                </label>
-            </div>
-        </div>
-        <div class="fv-row mb-5">
-            <div class="d-flex flex-stack">
-                <div class="me-5">
-                    <label class="fs-5 fw-semibold">Have it in strict operation?</label>
-                    <div class="fs-7 fw-semibold text-muted">Cut power in energy-excess without notifying </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-6 fv-row fv-plugins-icon-container">
+                        <label class="required fs-5 fw-semibold mb-2">Name</label>
+                        {{ form.nom }}
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6 fv-row fv-plugins-icon-container">
+                        <label class="required fs-5 fw-semibold mb-2">Port Number</label>
+                        {{ form.gpio }}
+                        <div id="gpio-message" class="text-danger"></div>
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6 fv-row fv-plugins-icon-container">
+                        <label class="required fs-5 fw-semibold mb-2">Power</label>
+                        {{ form.power }}
+                        <div id="gpio-message" class="text-danger"></div>
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6 fv-row fv-plugins-icon-container">
+                        <label class="required fs-5 fw-semibold mb-2">Maximum Energy Allowed</label>
+                        {{ form.consom_max }}
+                        <div id="gpio-message" class="text-danger"></div>
+                        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                    </div>
                 </div>
-                <label class="form-check form-switch form-check-custom form-check-solid">
-                    <input type="checkbox" class="form-check-input" {% if strict_check %}checked{% endif %}  name="strict"  />
-                    <span class="form-check-label fw-semibold text-muted">Yes</span>
-                </label>
+                <div class="fv-row mb-5">
+                    <div class="d-flex flex-stack">
+                        <div class="me-5">
+                            <label class="fs-5 fw-semibold">Make it a favorite object?</label>
+                            <div class="fs-7 fw-semibold text-muted">If yes it will display in favorite tab</div>
+                        </div>
+                        <label class="form-check form-switch form-check-custom form-check-solid">
+                            <input type="checkbox" class="form-check-input" {% if fav_check %}checked{% endif %}  name="favorite"  id="favorite" />
+                            <span class="form-check-label fw-semibold text-muted">Yes</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="fv-row mb-5">
+                    <div class="d-flex flex-stack">
+                        <div class="me-5">
+                            <label class="fs-5 fw-semibold">Have it in strict operation?</label>
+                            <div class="fs-7 fw-semibold text-muted">Cut power in energy-excess without notifying </div>
+                        </div>
+                        <label class="form-check form-switch form-check-custom form-check-solid">
+                            <input type="checkbox" class="form-check-input" {% if strict_check %}checked{% endif %}  name="strict"  />
+                            <span class="form-check-label fw-semibold text-muted">Yes</span>
+                        </label>
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="indicator-label">Submit</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <br/>
+        <br/>
+
+
+        {% if management %}
+        <div id="kt_app_content_container" class="app-container container-fluid">
+          <!--begin::Chart widget 20-->
+          <div class="card card-flush mb-5 mb-lg-10">
+            <!--begin::Header-->
+            <div class="card-header py-5">
+              <!--begin::Title-->
+              <h3 class="card-title fw-bold text-gray-800">Monthly Targets</h3>
+              <!--end::Title-->
+  
+              <!--begin::Toolbar-->
+              <div class="card-toolbar">
+                <!--begin::Daterangepicker(defined in src/js/layout/app.js)-->
+                <div
+                  data-kt-daterangepicker="true"
+                  data-kt-daterangepicker-opens="left"
+                  class="btn btn-sm btn-light d-flex align-items-center px-4"
+                >
+                  <!--begin::Display range-->
+                  <div class="text-gray-600 fw-bold">Loading date range...</div>
+                  <!--end::Display range-->
+  
+                  <i
+                    class="ki-outline ki-calendar-8 text-gray-500 lh-0 fs-2 ms-2 me-0"
+                  ></i>
+                </div>
+                <!--end::Daterangepicker-->
+              </div>
+              <!--end::Toolbar-->
+            </div>
+            <!--end::Header-->
+  
+            <!--begin::Card body-->
+            <div
+              class="card-body d-flex justify-content-between flex-column pb-0 px-0 pt-1"
+            >
+              <!--begin::Chart-->
+              <div
+                id="kt_charts_widget_20000"
+                class="min-h-auto ps-4 pe-6"
+                data-kt-chart-info="Sales"
+                style="height: 600px"
+              ></div>
+              <!--end::Chart-->
+            </div>
+            <!--end::Card body-->
+          </div>
+          <!--end::Chart widget 20-->
+        </div>
+        
+        {% endif %}
+
                 
-            </div>
-        </div>
-        <div class="row">
-            <button type="submit" class="btn btn-primary">
-                <span class="indicator-label">Submit</span>
-            </button>
-        </div>
+        <!--end::Content container-->
+      </div>
+      <!--end::Content-->
     </div>
-</form>
+    <!--end::Content wrapper-->
+    {% include "accounts/footer.html" %}
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var KTChartsWidget20 = (function () {
+        var e = { self: null, rendered: !1 },
+          t = function (e) {
+            var t = document.getElementById("kt_charts_widget_20000");
+            if (t) {
+              var a = parseInt(KTUtil.css(t, "height")),
+                l = KTUtil.getCssVariableValue("--bs-gray-500"),
+                r = KTUtil.getCssVariableValue("--bs-border-dashed-color"),
+                o = KTUtil.getCssVariableValue("--bs-danger"),
+                i = KTUtil.getCssVariableValue("--bs-danger"),
+                s = {
+                  series: [
+                    {
+                      name: t.getAttribute("data-kt-chart-info"),
+                      data: {{energy_data|safe}},
+                    },
+                  ],
+                  chart: {
+                    fontFamily: "inherit",
+                    type: "area",
+                    height: a,
+                    toolbar: { show: false }, // Disable the toolbar
+                    zoom: { enabled: false }, // Disable zoom
+                    selection: { enabled: false } // Disable selection
+                  },
+                  plotOptions: {},
+                  legend: { show: !1 },
+                  dataLabels: { enabled: !1 },
+                  fill: {
+                    type: "gradient",
+                    gradient: {
+                      shadeIntensity: 1,
+                      opacityFrom: 0.4,
+                      opacityTo: 0,
+                      stops: [0, 80, 100],
+                    },
+                  },
+                  stroke: { curve: "smooth", show: !0, width: 3, colors: [o] },
+                  xaxis: {
+                    categories: {{dates_data|safe}},
+                    axisBorder: { show: !1 },
+                    axisTicks: { show: !1 },
+                    tickAmount: 10,
+                    labels: {
+                      rotate: 0,
+                      rotateAlways: !0,
+                      style: { colors: l, fontSize: "12px" },
+                    },
+                    crosshairs: { position: "front", stroke: { color: o, width: 1, dashArray: 3 } },
+                    tooltip: { enabled: !0, offsetY: 0, style: { fontSize: "12px" } },
+                  },
+                  yaxis: {
+                    tickAmount: 10, // Set this to the number of desired ticks
+                    labels: {
+                      style: { colors: l, fontSize: "12px" },
+                      formatter: function (value) {
+                        // Manually control the displayed ticks
+                        const ticks = [1, 2, 3, 4, 5]; 
+                        return ticks.includes(value) ? value + " KWh" : "";
+                      },
+                    },
+                    min: 0, // Minimum value
+                    max: 5, // Maximum value
+                  },
+                  states: { normal: { filter: { type: "none", value: 0 } }, hover: { filter: { type: "none", value: 0 } }, active: { allowMultipleDataPointsSelection: !1, filter: { type: "none", value: 0 } } },
+                  tooltip: { style: { fontSize: "12px" }, y: { formatter: function (e) { return parseInt(e) + "Wh"; } } },
+                  colors: [i],
+                  grid: { borderColor: r, strokeDashArray: 4, yaxis: { lines: { show: !0 } } },
+                  markers: { strokeColor: o, strokeWidth: 3 },
+                };
+              (e.self = new ApexCharts(t, s)),
+                setTimeout(function () {
+                  e.self.render(), (e.rendered = !0);
+                }, 200);
+            }
+          };
+        return {
+          init: function () {
+            t(e),
+              KTThemeMode.on("kt.thememode.change", function () {
+                e.rendered && e.self.destroy(), t(e);
+              });
+          },
+        };
+      })();
+  
+      KTChartsWidget20.init();
+    });
+  </script>
+
+  
+
 
 <script src="{% static 'assets/js/jquery.min.js' %}"></script>
 <script>

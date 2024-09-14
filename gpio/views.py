@@ -9,7 +9,7 @@ from accounts.views import get_fav_bar, get_nav_bar
 from .forms import PinForm, PlaceForm, AntityForm
 from django.views import View
 from .chekers import check_place_manager, check_antity_manager
-from energy.tasks import calculate_energy_consumption
+from energy.tasks import register_energy_consumption, get_last_twenty_days_enregy_consumption
 from energy.models import Notification
 from django.utils import timezone
 from datetime import timedelta
@@ -87,7 +87,7 @@ def switch_on(request):
         pin.state = 1
         pin.save()
         if pin.state == 1:
-            calculate_energy_consumption(pin)
+            register_energy_consumption(pin)
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
@@ -104,7 +104,7 @@ def switch_off(request):
         pin.state = 0
         pin.save()
         if pin.state == 0:
-            calculate_energy_consumption(pin)
+            register_energy_consumption(pin)
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
@@ -287,16 +287,23 @@ class ManagePinView(BaseView):
             return redirect('dashboard')
 
         self.get_nav_and_fav_pins_notifs()
+
+        dates_data, energy_data = get_last_twenty_days_enregy_consumption(pins=[pin])
+
         form = self.form_class(instance=pin, user=self.user)
         fav_check = Favorites.objects.filter(user=self.user, pin=pin).exists()
         strict_check = pin.control_mode
+    
         self.context.update({
             "pin_is_active" : True,
+            'dates_data': dates_data,
+            'energy_data': energy_data,
             'form': form,
             'fav_check' : fav_check,
-             'strict_check': strict_check,
+            'strict_check': strict_check,
             'title': f"Manage {pin.nom} from {pin.board.nom}",
             'description': "blablaba balab dvhfw",
+            "management" : True
         })
         return render(request, self.template_name, self.context)
 

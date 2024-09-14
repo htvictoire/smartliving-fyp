@@ -7,6 +7,8 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fyp.settings')
+    
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -17,6 +19,9 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+    
+    from task_runner import start_periodic_task
+    start_periodic_task()  # Start the periodic task in a separate thread
 
 if __name__ == '__main__':
     main()

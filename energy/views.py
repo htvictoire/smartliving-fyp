@@ -13,6 +13,8 @@ def notif(request):
     return render(request, 'accounts/header.html',context )
 
 
+
+
 class EnergyReportJsonView(TemplateView):
     def get(self, request, *args, **kwargs):
         places = Places.objects.all()

@@ -8,8 +8,10 @@ from accounts.views import get_fav_bar, get_nav_bar
 from .forms import PinForm, PlaceForm, AntityForm
 from django.views import View
 from .chekers import check_place_manager, check_antity_manager
-
-from accounts.models import User
+from energy.tasks import calculate_energy_consumption
+from energy.models import Notification
+from django.utils import timezone
+from datetime import timedelta
 
 import random
 
@@ -95,6 +97,8 @@ def switch_on(request):
         pin = Pins.objects.get(id=pin_id)
         pin.state = 1
         pin.save()
+        if pin.state == 1:
+            calculate_energy_consumption(pin)
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
@@ -110,6 +114,8 @@ def switch_off(request):
         pin = Pins.objects.get(id=pin_id)
         pin.state = 0
         pin.save()
+        if pin.state == 0:
+            calculate_energy_consumption(pin)
         return JsonResponse({'status': 'success', 'state': pin.state})
     except Pins.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
@@ -154,21 +160,24 @@ class BaseView(View):
     """Base view for pin-related operations to avoid code repetition."""
     template_name = None
     form_class = None
-
+    
     def dispatch(self, request, *args, **kwargs):
         """Initialize common attributes before dispatching the request."""
         self.user = request.user
         self.context = {}
         return super().dispatch(request, *args, **kwargs)
 
-    def get_nav_and_fav_pins(self, board=None):
+    def get_nav_and_fav_pins_notifs(self, board=None):
         """Set up the navigation and favorite pins context."""
+        notifications = Notification.objects.filter(user=self.user).order_by('-created_at')
+        clear_old_notifications()
         nav_context = get_nav_bar(user=self.user, board=board)
         fav_pins = get_fav_bar(self.user)
         if isinstance(nav_context, tuple):
             nav_context = nav_context[0]
         self.context.update(nav_context)
         self.context['fav_pins'] = fav_pins
+        self.context['notifications'] = notifications
 
 
 
@@ -179,7 +188,7 @@ class PinsView(BaseView):
 
     def get(self, request, board_id):
         board = get_object_or_404(Board, id=board_id)
-        self.get_nav_and_fav_pins(board=board)
+        self.get_nav_and_fav_pins_notifs(board=board)
         board_pins = []
 
         if board in self.user.boards.all() or board in Board.objects.filter(place__in=self.user.places.all()):
@@ -195,7 +204,7 @@ class PinsView(BaseView):
             "pin_is_active" : True,
             "board_id": board_id,
             "pins": board_pins,
-        })
+            })
         return render(request, self.template_name, self.context)
 
 
@@ -236,12 +245,12 @@ class CreatePinView(BaseView):
     """View for creating a new pin."""
     template_name = 'gpio/pin.html'
     form_class = PinForm
-
+    
     def get(self, request):
         if not (self.user.place_manager or self.user.antity_manager):
             return redirect('login')
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         form = self.form_class(user=self.user)
         self.context.update({
             "pin_is_active" : True,
@@ -258,9 +267,11 @@ class CreatePinView(BaseView):
 
         form = self.form_class(request.POST, user=self.user)
         favorite = request.POST.get('favorite', False)
+        control_mode = request.POST.get('strict', False)
         if form.is_valid():
             pin = form.save(commit=False)
             pin.state = 0
+            pin.control_mode = control_mode
             pin.save()
             if favorite:
                 Favorites.objects.create(user=self.user, pin=pin) # Random number
@@ -286,13 +297,15 @@ class ManagePinView(BaseView):
         if not check_antity_manager(user=self.user, antity=pin.board):
             return redirect('dashboard')
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         form = self.form_class(instance=pin, user=self.user)
         fav_check = Favorites.objects.filter(user=self.user, pin=pin).exists()
+        strict_check = pin.control_mode
         self.context.update({
             "pin_is_active" : True,
             'form': form,
             'fav_check' : fav_check,
+             'strict_check': strict_check,
             'title': f"Manage {pin.nom} from {pin.board.nom}",
             'description': "blablaba balab dvhfw",
         })
@@ -305,9 +318,15 @@ class ManagePinView(BaseView):
 
         form = self.form_class(request.POST, instance=pin, user=self.user)
         favorite = request.POST.get('favorite', False)
+        control_mode = request.POST.get('strict', False)
+        if control_mode == 'on':
+            control_mode = True
+        else:
+            control_mode = False
         if form.is_valid():
             pin = form.save(commit=False)
-            pin.state = 0
+            pin.state = 0  
+            pin.control_mode = control_mode          
             pin.save()
             if favorite:
                 is_fav_pin , created = Favorites.objects.get_or_create(user=self.user, pin=pin) # Random number
@@ -346,7 +365,7 @@ class AntitiesView(BaseView):
             return redirect('dashboard')
         
         
-        self.get_nav_and_fav_pins() # call it before accessing the context key "all_boards"
+        self.get_nav_and_fav_pins_notifs() # call it before accessing the context key "all_boards"
         
         userantities = self.context['all_boards']
         for board in userantities:
@@ -380,7 +399,7 @@ class CreateAntityView(BaseView):
         if not (self.user.place_manager):
             return redirect('login')
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         form = self.form_class(user=self.user)
         self.context.update({
             "board_is_active": True,
@@ -417,7 +436,7 @@ class ManageAntityView(BaseView):
         if not check_place_manager(user=self.user, place=board.place):
             return redirect('dashboard')
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         form = self.form_class(instance=board, user=self.user)
         self.context.update({
             "board_is_active": True,
@@ -464,7 +483,7 @@ class PlacesView(BaseView):
             place.objects_number = Pins.objects.filter(board__place=place).count()
 
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         self.context.update({
             "place_is_active": True,
             "title": "My places",
@@ -485,7 +504,7 @@ class CreatePlaceView(BaseView):
         if not (self.user.place_manager):
             return redirect('login')
 
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         form = self.form_class()
         self.context.update({
             "place_is_active" : True,
@@ -520,7 +539,7 @@ class ManagePlaceView(BaseView):
         if not (self.user.place_manager) or not check_place_manager(user=self.user, place=place):
             return redirect('login')
         form = self.form_class(instance=place)
-        self.get_nav_and_fav_pins()
+        self.get_nav_and_fav_pins_notifs()
         self.context.update({
             "place_is_active" : True,
             'form': form,
@@ -537,3 +556,5 @@ class ManagePlaceView(BaseView):
             return redirect('my_places')
         return self.get(request)
 
+def clear_old_notifications():
+    Notification.objects.filter(created_at__lte=timezone.now() - timedelta(days=7)).delete()

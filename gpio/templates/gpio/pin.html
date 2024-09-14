@@ -26,6 +26,18 @@
                 <div id="gpio-message" class="text-danger"></div>
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
             </div>
+            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                <label class="required fs-5 fw-semibold mb-2">Power</label>
+                {{ form.power }}
+                <div id="gpio-message" class="text-danger"></div>
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+            <div class="col-md-6 fv-row fv-plugins-icon-container">
+                <label class="required fs-5 fw-semibold mb-2">Maximum Energy Allowed</label>
+                {{ form.consom_max }}
+                <div id="gpio-message" class="text-danger"></div>
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
         </div>
         <div class="fv-row mb-5">
             <div class="d-flex flex-stack">
@@ -37,6 +49,19 @@
                     <input type="checkbox" class="form-check-input" {% if fav_check %}checked{% endif %}  name="favorite"  id="favorite" />
                     <span class="form-check-label fw-semibold text-muted">Yes</span>
                 </label>
+            </div>
+        </div>
+        <div class="fv-row mb-5">
+            <div class="d-flex flex-stack">
+                <div class="me-5">
+                    <label class="fs-5 fw-semibold">Have it in strict operation?</label>
+                    <div class="fs-7 fw-semibold text-muted">Cut power in energy-excess without notifying </div>
+                </div>
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input type="checkbox" class="form-check-input" {% if strict_check %}checked{% endif %}  name="strict"  />
+                    <span class="form-check-label fw-semibold text-muted">Yes</span>
+                </label>
+                
             </div>
         </div>
         <div class="row">

@@ -1,0 +1,70 @@
+<!-- energy/templates/energy/report.html -->
+{% extends 'accounts/base.html' %}
+
+{% block main %}
+<h2>Rapport de consommation d'énergie</h2>
+
+<div id="energy-report">
+    {% for place_data in report_data %}
+        <h3>Place : {{ place_data.place.nom }} (Total : {{ place_data.total_energy }} kWh)</h3>
+        <ul>
+            {% for board_data in place_data.boards %}
+                <li>
+                    <strong>Board : {{ board_data.board.nom }} (Total : {{ board_data.total_energy }} kWh)</strong>
+                    <ul>
+                        {% for pin_data in board_data.pins %}
+                            <li>{{ pin_data.pin.nom }} : {{ pin_data.energy }} kWh</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+
+<script>
+    function refreshEnergyReport() {
+        fetch("{% url 'energy_report_json' %}")  // Utiliser l'URL de la vue JSON
+            .then(response => response.json())
+            .then(data => {
+                const reportContainer = document.getElementById('energy-report');
+                reportContainer.innerHTML = '';  // Effacer le contenu actuel
+
+                data.report_data.forEach(place_data => {
+                    let placeHTML = `
+                        <h3>Place : ${place_data.place_nom} (Total : ${place_data.total_energy.toFixed(2)} kWh)</h3>
+                        <ul>
+                    `;
+
+                    place_data.boards.forEach(board_data => {
+                        placeHTML += `
+                            <li>
+                                <strong>Board : ${board_data.board_nom} (Total : ${board_data.total_energy.toFixed(2)} kWh)</strong>
+                                <ul>
+                        `;
+
+                        board_data.pins.forEach(pin_data => {
+                            placeHTML += `<li>${pin_data.pin_nom} : ${pin_data.energy.toFixed(2)} kWh</li>`;
+                        });
+
+                        placeHTML += `
+                                </ul>
+                            </li>
+                        `;
+                    });
+
+                    placeHTML += `</ul>`;
+                    reportContainer.innerHTML += placeHTML;
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des données:', error));
+    }
+
+    // Actualiser toutes les 3 secondes
+    setInterval(refreshEnergyReport, 3000);
+
+    // Initialiser l'affichage au chargement de la page
+    refreshEnergyReport();
+</script>
+
+{% endblock %}

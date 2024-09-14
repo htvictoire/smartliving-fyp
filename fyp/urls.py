@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gpio.urls')),
 
-    path('', include('accounts.urls'))
+    path('', include('accounts.urls')),
+    path('', include('energy.urls'))
 ]
 
 if settings.DEBUG:

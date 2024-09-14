@@ -1,7 +1,5 @@
 from django.db import models
-
-
-
+from django.conf import settings
 
 
 class Places(models.Model):
@@ -13,19 +11,16 @@ class Places(models.Model):
         return self.nom
     
 
-
-
-
-
-class Board(models.Model):   # Entities
-    nom = models.CharField(max_length=255,unique=True, null=True, blank=False)
+    
+class Board(models.Model):
+    nom = models.CharField(max_length=255, unique=True, null=True, blank=False)
     place = models.ForeignKey(Places, null=False, blank=False, on_delete=models.CASCADE)
     code = models.CharField(max_length=10)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.code} for {self.nom}'
-    
+
 
 
 class Pins(models.Model):
@@ -54,3 +49,12 @@ class Pins(models.Model):
 
 
 
+
+class MessageBoard(models.Model):
+    tel_num = models.CharField(max_length=20, null=True, blank=True, unique=True)
+    code = models.CharField(max_length=10)
+    description = models.TextField(null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)  # Ajout d'un related_name unique
+
+    def __str__(self):
+        return f'{self.code} for {self.user}'

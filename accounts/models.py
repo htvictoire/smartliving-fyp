@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import random
 from datetime import date , time
-from gpio.models import Places, Board, Pins
+from gpio.models import Places, Board, Pins, MessageBoard
 
 
 from django.utils import timezone
@@ -57,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     places = models.ManyToManyField(Places, blank=True)
 
     antity_manager = models.BooleanField(default=False)
-    boards  = models.ManyToManyField(Board, blank=True)
+    boards = models.ManyToManyField('gpio.Board', blank=True, related_name='users_boards') 
 
     pins = models.ManyToManyField(Pins, blank=True)
 
@@ -101,10 +101,15 @@ class Favorites(models.Model):
 
 class Messages(models.Model):
     message = models.TextField()
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE)
-    sent = models.BooleanField(default=False)
-    user_code = models.CharField(max_length=100, null=True, blank=False) # To pass to the link in the esp32 
+    sender = models.CharField(max_length=20, null=True, blank=True) 
+    board = models.ForeignKey(MessageBoard, on_delete=models.CASCADE, related_name='board_messages',null=True, blank=True)  
+    receiver = models.CharField(max_length=20, null=True, blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)
+    out = models.BooleanField(default=True)
+    sent = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver}"
 
 
 

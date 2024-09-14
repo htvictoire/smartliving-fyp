@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .models import Board, Pins, Places
+from django.contrib.auth.decorators import login_required
+from .models import Board, Pins, Places, MessageBoard
 from accounts.models import Messages, Favorites
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.views import get_fav_bar, get_nav_bar
@@ -43,7 +44,7 @@ def etat_outputs(request, board_code):
 
 
 
-def messages(request):
+'''def messages(request):
     if request.method == 'GET':
         messages = Messages.objects.filter(sent=False)
         messagess = [
@@ -58,21 +59,9 @@ def messages(request):
         for m in messages:
             m.sent = True
             m.save()
-        return JsonResponse(messagess, safe=False)
+        return JsonResponse(messagess, safe=False) '''
 
 
-'''
-@csrf_exempt
-def messages(request):
-    if request.method == 'GET':
-        messages_ = Messages.objects.filter(sent = False)
-        messagess = {message.recipient: str(message.message) for message in messages_}
-        return JsonResponse(messagess)
-'''
-
-
-
-# render all messages 
 
 
 
@@ -558,3 +547,91 @@ class ManagePlaceView(BaseView):
 
 def clear_old_notifications():
     Notification.objects.filter(created_at__lte=timezone.now() - timedelta(days=7)).delete()
+
+
+
+
+
+class SendMessageView(BaseView):
+    template_name = 'gpio/sendmessage.html'
+    def get(self, request):
+        user = request.user
+        user_boards = MessageBoard.objects.filter(user=user)
+        if not user_boards:
+            return redirect('dashboard')
+        if len(user_boards) > 1:
+            many_boards = True
+            boards = user_boards
+        else:
+            boards = None
+            many_boards = False
+        self.context.update({
+            'many_boards': many_boards,
+            'boards': boards
+        })
+            
+        return render(request, self.template_name, self.context)
+    def post(self, request):
+        if request.method == 'POST':
+            message_body = request.POST.get('message')
+            phone_number = request.POST.get('phone_number')
+            
+            if len(user_boards = MessageBoard.objects.filter(user=request.user)) > 1:
+                board_id = request.POST.get('board_code')
+            else:
+                board_id = MessageBoard.objects.get(user=request.user).id
+            
+
+            if not message_body or not phone_number:
+                return JsonResponse({'error': 'Please fil all the fields'}, status=400)
+
+            Messages.objects.create(
+                message=message_body,
+                sender=request.user.email,
+                receiver=phone_number,
+                out=True,
+                board=MessageBoard.objects.get(id=board_id)
+            )
+            return redirect('messages')
+
+
+
+class MyMessagesView(BaseView):
+    template_name = 'gpio/messages.html'
+    def get(self, request):
+        user_boards = MessageBoard.objects.filter(user=request.user)
+        
+        conversations = Messages.objects.filter(board__in=user_boards).order_by('created_at') 
+
+        self.context.update({
+            'conversations': conversations
+        })
+        return render(request, self.template_name , self.context)
+
+
+def receive_messages(request):
+    if request.method == 'POST':
+        message_body = request.POST.get('message')
+        phone_number = request.POST.get('phone_number')
+        board_code = request.POST.get('board_code')
+        Messages.objects.create(
+            message=message_body,
+            sender=phone_number,
+            receiver=MessageBoard.objects.get(code=board_code).user.email,
+            out=False
+        )
+        return redirect('messages')
+    
+
+def send_message(request, board_code):
+    if request.method == 'GET':
+        board = MessageBoard.objects.get(code=board_code)
+        messages = Messages.objects.filter(board=board, out=True, sent = False)
+        messages = [
+            {
+                'number': m.receiver,
+                'message': m.message
+            }
+            for m in messages
+        ]
+        return JsonResponse({'messages': messages}, safe=False)

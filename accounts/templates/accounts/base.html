@@ -366,6 +366,18 @@
             </a>
           </div>
 
+          <div class="menu-item">
+            <a class="menu-link {% if pin_is_active %}active{% endif %} " href="{% url "messages" %}">
+              <span class="menu-bullet">
+                <span class="bullet bullet-dot"> </span>
+              </span>
+              <span class="menu-title"> My Messages </span>
+              <span class="menu-badge">
+                <span class="badge badge-primary"> {{pn_number}} </span>
+              </span>
+            </a>
+          </div>
+
         </div>
       </div>
     </div>

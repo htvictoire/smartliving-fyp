@@ -1,0 +1,271 @@
+{% extends 'accounts/base.html' %}  {% load static %}
+
+{% block active %}
+    {% if active_place %}
+    <span class="menu-link">
+        <span class="menu-title">{{active_place}}</span>
+        <span class="menu-arrow"></span>
+    </span>
+    {% endif %}
+{% endblock active %}
+
+{% block main %}
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <!--begin::Content wrapper-->
+    <div class="d-flex flex-column flex-column-fluid">
+        <!--begin::Content-->
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <!--begin::Content container-->
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                <!--begin::Row-->
+                <div class="row g-5 g-xl-10 g-xl-10">
+                    <!--begin::Messenger-->
+      <div class="card w-100 border-0 rounded-0" id="kt_drawer_chat_messenger">
+        <!--begin::Card header-->
+        <div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+          <!--begin::Title-->
+          <div class="card-title">
+            <!--begin::User-->
+            <div class="d-flex justify-content-center flex-column me-3">
+              <a
+                href=""
+                class="fs-4 fw-bold text-gray-900  me-1 mb-2 lh-1"
+                >My Messages</a
+              >
+            </div>
+            <!--end::User-->
+          </div>
+          <!--end::Title-->
+        </div>
+        <!--end::Card header-->
+
+
+
+
+        {% for message in conversations %}
+            <!--begin::Card body-->
+            <div class="card-body" id="kt_drawer_chat_messenger_body">
+            <!--begin::Messages-->
+            <div>
+                <!--begin::Message(in)-->
+                {% if message.sender != request.user %}
+                <div class="d-flex justify-content-start mb-10">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column align-items-start">
+                    <!--begin::User-->
+                    <div class="d-flex align-items-center mb-2">
+                    <!--begin::Avatar-->
+                    <div class="symbol symbol-35px symbol-circle">
+                        <img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+                    </div>
+                    <!--end::Avatar-->
+                    <!--begin::Details-->
+                    <div class="ms-3">
+                        <a
+                        href="#"
+                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1"
+                        >{{ message.sender.email }}</a
+                        >
+                        <span class="text-muted fs-7 mb-1"> Sent {{ message.created_at|date:"d M Y, H:i" }}</span>
+                    </div>
+                    <!--end::Details-->
+                    </div>
+                    <!--end::User-->
+
+                    <!--begin::Text-->
+                    <div
+                    class="p-5 rounded bg-light-info text-gray-900 fw-semibold mw-lg-400px text-start"
+                    data-kt-element="message-text"
+                    >
+                    {{ message.message }}
+                    </div>
+                    <!--end::Text-->
+                </div>
+                <!--end::Wrapper-->
+                </div>
+                <!--end::Message(in)-->
+
+
+
+                {% else %}
+                
+
+                <!--begin::Message(out)-->
+                <div class="d-flex justify-content-end mb-10">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column align-items-end">
+                    <!--begin::User-->
+                    <div class="d-flex align-items-center mb-2">
+                    <!--begin::Details-->
+                    <div class="me-3">
+                        <span class="text-muted fs-7 mb-1">{{ message.created_at|date:"d M Y, H:i" }}</span>
+                        <a
+                        href="#"
+                        class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1"
+                        >You</a
+                        >
+                    </div>
+                    <!--end::Details-->
+
+                    <!--begin::Avatar-->
+                    <div class="symbol symbol-35px symbol-circle">
+                        <img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+                    </div>
+                    <!--end::Avatar-->
+                    </div>
+                    <!--end::User-->
+
+                    <!--begin::Text-->
+                    <div
+                    class="p-5 rounded bg-light-primary text-gray-900 fw-semibold mw-lg-400px text-end"
+                    data-kt-element="message-text"
+                    >[Reply to {{ message.recipient.email }}]. 
+                    {{ message.message }}
+                    </div>
+                    <!--end::Text-->
+                {% endif %}
+                </div>
+                <!--end::Wrapper-->
+                </div>
+                <!--end::Message(out)-->
+
+
+                {% empty %} 
+            <div class="fs-5 fw-bold text-gray-900  me-1">
+             <small>No message available.</small></div>
+        {% endfor %}
+                
+            </div>
+            <!--end::Messages-->
+            
+            </div>
+            <!--end::Card body-->
+            
+            
+        <!--begin::Card footer-->
+        <div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+          
+
+          <!--begin:Toolbar-->
+          <div class="row">
+            <!--begin::Send-->
+            <a href="{% url "sendmessage" %}"
+              class="btn btn-primary"
+              type="button"
+              data-kt-element="send"
+            >
+              Write your Message
+            </a>
+            <!--end::Send-->
+          </div>
+          <!--end::Toolbar-->
+        </div>
+        <!--end::Card footer-->
+      </div>
+      <!--end::Messenger-->
+                </div>
+                <!--end::Row-->
+            </div>
+            <!--end::Content container-->
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Content wrapper-->
+    {% include "accounts/footer.html" %}
+</div>
+
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('.form-check-input').change(function() {
+        var pinId = $(this).data('pin-id');
+        var isChecked = $(this).is(':checked');
+        var url = isChecked ? '{% url "switch_on" %}' : '{% url "switch_off" %}';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ 'pin_id': pinId }),
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            success: function(response) {
+                console.log('State changed successfully:', response);
+            },
+            error: function(xhr, errmsg, err) {
+                console.log('Error:', errmsg);
+            }
+        });
+    });
+
+    // Periodic updates
+    setInterval(function() {
+        $('.form-check-input').each(function() {
+            var pinId = $(this).data('pin-id');
+            $.ajax({
+                url: '{% url "check_pin_state" %}',
+                type: 'GET',
+                data: { 'pin_id': pinId },
+                success: function(response) {
+                    var pinState = response.state;
+                    var pinCard = $('#pin-' + pinId);
+                    var statusText = pinState === 1 ? 'Running' : 'Not Running';
+                    var statusColor = pinState === 1 ? 'green' : 'blue';
+                    var textColor = pinState === 1 ? 'text-success' : 'text-primary';
+                    
+                    // Update checkbox
+                    $('#pin-checkbox-' + pinId).prop('checked', pinState === 1);
+                    
+                    // Update status and manage button dynamically
+                    pinCard.find('#pin-status-' + pinId).removeClass().addClass('rounded ' + textColor + ' fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity').text(statusText);
+                    pinCard.find('#pin-svg-' + pinId).css('background', statusColor);
+                    pinCard.find('#manage-btn-' + pinId).removeClass().addClass(textColor);
+
+                    
+                    if (pinState === 1) {
+                        
+                        // Update SVG and status text for Running
+                        $('input[data-pin-id="' + pinId + '"]').closest('.card').find('.d-flex.flex-stack').first().html(`
+                            <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" style="background: green">
+                                <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+                                    <rect x="40" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="50" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                    <rect x="60" y="35" width="4" height="10" fill="#fff">
+                                        <animateTransform attributeType="xml" attributeName="transform" type="translate" values="0 0; 0 20; 0 0" begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                                    </rect>
+                                </svg>
+                            </div>
+                            <span class="rounded text-success fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity">
+                                Running
+                            </span>
+                        `);
+                    } else {
+                        $('input[data-pin-id="' + pinId + '"]').closest('.card').find('.d-flex.flex-stack').first().html(`
+                            <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" style="background: blue">
+                                <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+                                    <rect x="35" y="40" width="4" height="20" fill="#fff"> </rect>
+                                    <rect x="50" y="40" width="4" height="20" fill="#fff"> </rect>
+                                    <rect x="65" y="40" width="4" height="20" fill="#fff"> </rect>
+                                </svg>
+                            </div>
+                            <span class="rounded text-primary fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity">
+                                Not Running
+                            </span>
+                        `);
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log('Error:', errmsg);
+                }
+            });
+        });
+    }, 5000); // 1 second interval
+});
+</script>
+
+
+{% endblock %}

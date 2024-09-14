@@ -1,12 +1,20 @@
 from django.urls import path
 from . import views
-from .views import PinsView, CreatePinView, ManagePinView, AntitiesView, CreateAntityView, ManageAntityView, PlacesView, ManagePlaceView, CreatePlaceView
+from .views import (PinsView,
+                   CreatePinView,
+                   ManagePinView,
+                   AntitiesView,
+                   CreateAntityView,
+                   ManageAntityView, SendMessageView,
+                   PlacesView, MyMessagesView,
+                   ManagePlaceView, CreatePlaceView)
 
 
 urlpatterns = [
-    path('outputs_state/<int:board_id>/', views.etat_outputs, name='outputs_state'),
+    path('outputs_state/<str:board_code>/', views.etat_outputs, name='outputs_state'),
     path('output_create/', views.handle_output_create, name='output_create'),
-    path('messages/', views.messages, name='messages'),
+    path('messages/', MyMessagesView.as_view(), name='messages'),
+    path('send_message/', SendMessageView.as_view(), name='sendmessage'),
     path('update_messages/<int:message_id>/', views.update_messages, name='update_messages'),
 
 

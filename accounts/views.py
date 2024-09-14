@@ -128,9 +128,9 @@ def get_fav_bar(user):
 
 
 
-def get_messages(user):
-    messages = [m for m in Messages.objects.filter(recipient=user).order_by('created_at')]
-    return messages
+# def get_messages(user):
+#     messages = [m for m in Messages.objects.filter(recipient=user).order_by('created_at')]
+#     return messages
 
 
 
@@ -141,11 +141,7 @@ def dashboard(request):
     fav_pins = get_fav_bar(user)
     title = 'Dashboard'
     description = ''
-    messages = get_messages(user)
     
-    for m in messages:
-        print(m.message)
-
     if isinstance(nav_context, tuple):
         nav_context = nav_context[0]
         

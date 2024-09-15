@@ -32,15 +32,8 @@ def etat_outputs(request, board_id):
 def etat_outputs(request, board_code):
     if request.method == 'GET':
         outputs = Pins.objects.filter(board__code=board_code)
-        output_states = [
-            {
-                'gpio': output.gpio,
-                'state': str(output.state),
-                'id': output.id,
-            }
-            for output in outputs
-        ]
-        return JsonResponse(output_states, safe=False)
+        output_states = {output.gpio: str(output.state) for output in outputs}
+        return JsonResponse(output_states)
 
 
 
@@ -110,7 +103,7 @@ def switch_off(request):
         return JsonResponse({'status': 'error', 'message': 'Pin not found'}, status=404)
     except (KeyError, json.JSONDecodeError):
         return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
-    
+
 
 
 
@@ -149,7 +142,7 @@ class BaseView(View):
     """Base view for pin-related operations to avoid code repetition."""
     template_name = None
     form_class = None
-    
+
     def dispatch(self, request, *args, **kwargs):
         """Initialize common attributes before dispatching the request."""
         self.user = request.user
@@ -207,7 +200,7 @@ def get_available_gpios(request):
 
         # Get all GPIO pins already used on the selected board
         used_gpios = Pins.objects.filter(board=board).values_list('gpio', flat=True)
-        
+
         # Define all possible GPIO options
         GPIO_CHOICES = {
             1: "12",
@@ -219,7 +212,7 @@ def get_available_gpios(request):
 
         # Filter out GPIOs that are already used
         available_gpios = {key: value for key, value in GPIO_CHOICES.items() if key not in used_gpios}
-        
+
         if not available_gpios:
             return JsonResponse({'message': 'No available GPIO pins on this board'}, status=200)
 
@@ -232,7 +225,7 @@ class CreatePinView(BaseView):
     """View for creating a new pin."""
     template_name = 'gpio/pin.html'
     form_class = PinForm
-    
+
     def get(self, request):
         if not (self.user.place_manager or self.user.antity_manager):
             return redirect('login')
@@ -260,7 +253,7 @@ class CreatePinView(BaseView):
             pin.control_mode = control_mode
             pin.save()
             if favorite:
-                Favorites.objects.create(user=self.user, pin=pin) 
+                Favorites.objects.create(user=self.user, pin=pin)
                 _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
                 if len(_favs ) > 5:
                     _favs.last().delete()
@@ -290,7 +283,7 @@ class ManagePinView(BaseView):
         form = self.form_class(instance=pin, user=self.user)
         fav_check = Favorites.objects.filter(user=self.user, pin=pin).exists()
         strict_check = pin.control_mode
-    
+
         self.context.update({
             'dates_data': dates_data,
             'energy_data': energy_data,
@@ -319,13 +312,13 @@ class ManagePinView(BaseView):
             control_mode = False
         if form.is_valid():
             pin = form.save(commit=False)
-            pin.state = 0  
-            pin.control_mode = control_mode          
+            pin.state = 0
+            pin.control_mode = control_mode
             pin.save()
             if favorite:
                 is_fav_pin , created = Favorites.objects.get_or_create(user=self.user, pin=pin)
                 if created:
-                    
+
                     print("\n\nTTTTTTTTTTRRRRRRRRUUU\n\n")
                     _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
                     if len(_favs ) > 5:
@@ -367,10 +360,10 @@ class AntitiesView(BaseView):
     def get(self, request):
         if not check_antity_manager(user=self.user, antity=None):
             return redirect('dashboard')
-        
-        
+
+
         self.get_nav_and_fav_pins_notifs() # call it before accessing the context key "all_boards"
-        
+
         userantities = self.context['all_boards']
         for board in userantities:
             board.name = board.nom.capitalize()
@@ -388,7 +381,7 @@ class AntitiesView(BaseView):
             "userantities": userantities,
         })
         return render(request, self.template_name, self.context)
-    
+
 
 
 
@@ -444,7 +437,7 @@ class ManageAntityView(BaseView):
         form = self.form_class(instance=board, user=self.user)
         if pins:
             dates_data, energy_data, past_date, today = get_last_twenty_days_enregy_consumption(pins)
-        else : 
+        else :
             dates_data, energy_data, past_date, today = None, None, None, None
 
         print(f'{dates_data}\n\n{energy_data}\n\n{past_date , today}')
@@ -519,7 +512,7 @@ class PlacesView(BaseView):
             "userplaces": userplaces,
         })
         return render(request, self.template_name, self.context)
-    
+
 
 
 
@@ -543,7 +536,7 @@ class CreatePlaceView(BaseView):
         return render(request, self.template_name, self.context)
 
     def post(self, request):
-        
+
         form = self.form_class(request.POST)
         if form.is_valid():
             place = form.save(commit=False)
@@ -570,7 +563,7 @@ class ManagePlaceView(BaseView):
         form = self.form_class(instance=place)
         if pins:
             dates_data, energy_data, past_date, today = get_last_twenty_days_enregy_consumption(pins)
-        else : 
+        else :
             dates_data, energy_data, past_date, today = None, None, None, None
 
         print(f'{dates_data}\n\n{energy_data}\n\n{past_date , today}')
@@ -587,7 +580,7 @@ class ManagePlaceView(BaseView):
             'past_date': past_date,
             'today': today,
             'have_pins': pins,
-            
+
         })
         return render(request, self.template_name, self.context)
 
@@ -637,18 +630,18 @@ class SendMessageView(BaseView):
             'many_boards': many_boards,
             'boards': boards
         })
-            
+
         return render(request, self.template_name, self.context)
     def post(self, request):
         if request.method == 'POST':
             message_body = request.POST.get('message')
             phone_number = request.POST.get('phone_number')
-            
+
             if len(user_boards = MessageBoard.objects.filter(user=request.user)) > 1:
                 board_id = request.POST.get('board_code')
             else:
                 board_id = MessageBoard.objects.get(user=request.user).id
-            
+
 
             if not message_body or not phone_number:
                 return JsonResponse({'error': 'Please fil all the fields'}, status=400)
@@ -668,8 +661,8 @@ class MyMessagesView(BaseView):
     template_name = 'gpio/messages.html'
     def get(self, request):
         user_boards = MessageBoard.objects.filter(user=request.user)
-        
-        conversations = Messages.objects.filter(board__in=user_boards).order_by('created_at') 
+
+        conversations = Messages.objects.filter(board__in=user_boards).order_by('created_at')
 
         self.context.update({
             'conversations': conversations
@@ -689,7 +682,7 @@ def receive_messages(request):
             out=False
         )
         return redirect('messages')
-    
+
 
 def send_message(request, board_code):
     if request.method == 'GET':

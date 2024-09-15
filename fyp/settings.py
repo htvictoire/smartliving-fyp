@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'accounts',
     'gpio',
     'energy',
-    
+
 
 ]
 
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    
+
 ]
 
 ROOT_URLCONF = 'fyp.urls'
@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'fyp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3', 
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -177,8 +177,7 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 #DEBUG = getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS',
-                       '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = ['vicky243.pythonanywhere.com']
 
 
 
@@ -187,7 +186,7 @@ ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS',
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST='smtp.titan.email'
 EMAIL_HOST_USER='test@bnjcongo.com'
-EMAIL_HOST_PASSWORD='1234/TEst'  
+EMAIL_HOST_PASSWORD='1234/TEst'
 EMAIL_PORT= 465
 EMAIL_USE_SSL=True
 

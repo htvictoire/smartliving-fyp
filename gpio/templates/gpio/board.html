@@ -6,14 +6,24 @@
 
         {% block title %}{{title}}{% endblock title %}
         {% block description %}{{description}}{% endblock description %}
-     
-        {% block main %}
+    
 
-        
-            <form method="post" >
-                {% csrf_token %}
-                <div class="modal-body py-10 px-lg-17" data-select2-id="select2-data-341-gjf8">
-                                              
+
+{% block main %}
+
+                
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <!--begin::Content wrapper-->
+    <div class="d-flex flex-column flex-column-fluid">
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+
+
+        <form method="post" class="app-container container-fluid" >
+            {% csrf_token %}
+            <div data-select2-id="select2-data-341-gjf8">
+                             
                         <div class="mb-5 fv-row">
                                 
                             <label class="required fs-5 fw-semibold mb-2">Antity Location</label>
@@ -32,34 +42,208 @@
                            
                             <div class="col-md-6 fv-row fv-plugins-icon-container">
                                
-                                <label class="required fs-5 fw-semibold mb-2">Antity Code</label>
+                                <label class="required fs-5 fw-semibold mb-2">Entity Code</label>
                                 {{form.code}}
                                 
                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
                           
                         </div>
-                        
-                    <div class= "row">
-                        <button type="submit" class="btn btn-primary">
-                            <span class="indicator-label">
-                                Submit
-                            </span>
-                        </button>
-
-                    </div>
                     
+                <div class= "row">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="indicator-label">
+                            Submit
+                        </span>
+                    </button>
                 </div>
                 
+                <br/>
                 
-            </form>
+
+                <br/>
+            </div>
             
-        </div>
+            
+        </form>
+        <br/>
+
         
-        <div>
+    {% if management %}
+    <div id="kt_app_content_container" class="app-container container-fluid">
+      <!--begin::Chart widget 20-->
+      <div class="card card-flush mb-5 mb-lg-10">
+        <!--begin::Header-->
+        <div class="card-header py-5">
+          <!--begin::Title-->
+          <h3 class="card-title fw-bold text-gray-800"> {% if have_pins %}Energy Consumption in {{form.instance.nom}} at {{form.instance.place.nom}} {% else %} Add objects to this entity to see energy consumption report{% endif %} </h3>
+          <!--end::Title-->
+
+          <!--begin::Toolbar-->
+          <div class="card-toolbar">
+            {% if have_pins %} 
+             <h3 class="card-title fw-bold text-gray-600"> From {{past_date}} to {{today}} </h3>
+            {% endif %}
+          </div>
+          <!--end::Toolbar-->
         </div>
+        <!--end::Header-->
+
+        <!--begin::Card body-->
+        <div
+          class="card-body d-flex justify-content-between flex-column pb-0 px-0 pt-1"
+        >
+
+        {% if have_pins %}
+          <!--begin::Chart-->
+          <div
+            id="kt_charts_widget_20000"
+            class="min-h-auto ps-4 pe-6"
+            data-kt-chart-info="Consumption"
+            style="height: 600px"
+          ></div>
+          {% endif %}
+          <!--end::Chart-->
+        </div>
+        <!--end::Card body-->
+      </div>
+      <!--end::Chart widget 20-->
+        <div class= "row">
+            <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal">
+                <span class="indicator-label">
+                    Delete this Entity
+                </span>
+            </button>
+        </div>
+    </div>
+    
+    {% endif %}
+        
+            
+    <!--end::Content container-->
+  </div>
+  <!--end::Content-->
+</div>
+<!--end::Content wrapper-->
+{% include "accounts/footer.html" %}
+</div>
 
 
 
+<script src='{% static "assets/js/mdb.min.js" %}'></script>
+
+{% if management %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Delete {{form.instance.nom}}</h5>
+      <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">Are you sure You want to delete the entity {{form.instance.nom}}</div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+      <a href={% url "delete_antity" form.instance.id %} class="btn btn-danger">Delete</a>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var KTChartsWidget20 = (function () {
+    var e = { self: null, rendered: !1 },
+      t = function (e) {
+        var t = document.getElementById("kt_charts_widget_20000");
+        if (t) {
+          var a = parseInt(KTUtil.css(t, "height")),
+            l = KTUtil.getCssVariableValue("--bs-gray-500"),
+            r = KTUtil.getCssVariableValue("--bs-border-dashed-color"),
+            o = KTUtil.getCssVariableValue("--bs-primary"),
+            i = KTUtil.getCssVariableValue("--bs-primary"),
+            s = {
+              series: [
+                {
+                  name: t.getAttribute("data-kt-chart-info"),
+                  data: {{energy_data|safe}},
+                },
+              ],
+              chart: {
+                fontFamily: "inherit",
+                type: "area",
+                height: a,
+                toolbar: { show: false }, // Disable the toolbar
+                zoom: { enabled: false }, // Disable zoom
+                selection: { enabled: false } // Disable selection
+              },
+              plotOptions: {},
+              legend: { show: !1 },
+              dataLabels: { enabled: !1 },
+              fill: {
+                type: "gradient",
+                gradient: {
+                  shadeIntensity: 1,
+                  opacityFrom: 0.4,
+                  opacityTo: 0,
+                  stops: [0, 80, 100],
+                },
+              },
+              stroke: { curve: "smooth", show: !0, width: 3, colors: [o] },
+              xaxis: {
+                categories: {{dates_data|safe}},
+                axisBorder: { show: !1 },
+                axisTicks: { show: !1 },
+                tickAmount: 10,
+                labels: {
+                  rotate: 0,
+                  rotateAlways: !0,
+                  style: { colors: l, fontSize: "12px" },
+                },
+                crosshairs: { position: "front", stroke: { color: o, width: 1, dashArray: 3 } },
+                tooltip: { enabled: !0, offsetY: 0, style: { fontSize: "12px" } },
+              },
+              yaxis: {
+                tickAmount: 10, // Set this to the number of desired ticks
+                labels: {
+                  style: { colors: l, fontSize: "12px" },
+                  formatter: function (value) {
+                    // Manually control the displayed ticks
+                    const ticks = [1, 2, 3, 4, 5]; 
+                    return ticks.includes(value) ? value + " KWh" : "";
+                  },
+                },
+                min: 0, // Minimum value
+                max: 5, // Maximum value
+              },
+              states: { normal: { filter: { type: "none", value: 0 } }, hover: { filter: { type: "none", value: 0 } }, active: { allowMultipleDataPointsSelection: !1, filter: { type: "none", value: 0 } } },
+              tooltip: { style: { fontSize: "12px" }, y: { formatter: function (e) { return parseInt(e) + " KWh"; } } },
+              colors: [i],
+              grid: { borderColor: r, strokeDashArray: 4, yaxis: { lines: { show: !0 } } },
+              markers: { strokeColor: o, strokeWidth: 3 },
+            };
+          (e.self = new ApexCharts(t, s)),
+            setTimeout(function () {
+              e.self.render(), (e.rendered = !0);
+            }, 200);
+        }
+      };
+    return {
+      init: function () {
+        t(e),
+          KTThemeMode.on("kt.thememode.change", function () {
+            e.rendered && e.self.destroy(), t(e);
+          });
+      },
+    };
+  })();
+
+  KTChartsWidget20.init();
+});
+</script>
 
 
 {% endblock %}

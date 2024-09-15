@@ -44,7 +44,7 @@ def get_last_twenty_days_enregy_consumption(pins):
     json_dates_data = json.dumps(dates_data)
     json_energy_data = json.dumps(energy_data)
         
-    return json_dates_data, json_energy_data
+    return json_dates_data, json_energy_data,  (today-timedelta(days=19)).strftime("%b %d"), today.strftime("%b %d")
 
 
 

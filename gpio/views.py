@@ -159,7 +159,6 @@ class BaseView(View):
     def get_nav_and_fav_pins_notifs(self, board=None):
         """Set up the navigation and favorite pins context."""
         notifications = Notification.objects.filter(user=self.user).order_by('-created_at')
-        clear_old_notifications()
         nav_context = get_nav_bar(user=self.user, board=board)
         fav_pins = get_fav_bar(self.user)
         if isinstance(nav_context, tuple):
@@ -190,7 +189,6 @@ class PinsView(BaseView):
                 pin.manager = False
 
         self.context.update({
-            "pin_is_active" : True,
             "board_id": board_id,
             "pins": board_pins,
             })
@@ -242,11 +240,10 @@ class CreatePinView(BaseView):
         self.get_nav_and_fav_pins_notifs()
         form = self.form_class(user=self.user)
         self.context.update({
-            "pin_is_active" : True,
             'form': form,
             'pin_is_active': True,
             'title': "Add an Object",
-            'description': "Add a physical object to an Antity",
+            'description': "Add a physical object representation to an Entity",
         })
         return render(request, self.template_name, self.context)
 
@@ -263,7 +260,7 @@ class CreatePinView(BaseView):
             pin.control_mode = control_mode
             pin.save()
             if favorite:
-                Favorites.objects.create(user=self.user, pin=pin) # Random number
+                Favorites.objects.create(user=self.user, pin=pin) 
                 _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
                 if len(_favs ) > 5:
                     _favs.last().delete()
@@ -286,23 +283,24 @@ class ManagePinView(BaseView):
         if not check_antity_manager(user=self.user, antity=pin.board):
             return redirect('dashboard')
 
-        self.get_nav_and_fav_pins_notifs()
+        self.get_nav_and_fav_pins_notifs(board=pin.board)
 
-        dates_data, energy_data = get_last_twenty_days_enregy_consumption(pins=[pin])
+        dates_data, energy_data, past_date, today = get_last_twenty_days_enregy_consumption(pins=[pin])
 
         form = self.form_class(instance=pin, user=self.user)
         fav_check = Favorites.objects.filter(user=self.user, pin=pin).exists()
         strict_check = pin.control_mode
     
         self.context.update({
-            "pin_is_active" : True,
             'dates_data': dates_data,
             'energy_data': energy_data,
+            'past_date': past_date,
+            'today': today,
             'form': form,
             'fav_check' : fav_check,
             'strict_check': strict_check,
-            'title': f"Manage {pin.nom} from {pin.board.nom}",
-            'description': "blablaba balab dvhfw",
+            'title': f"Manage {pin.nom} from {pin.board.nom} at {pin.board.place.nom}",
+            'description': "Edit or delete the object, View its energy consumption report",
             "management" : True
         })
         return render(request, self.template_name, self.context)
@@ -325,18 +323,28 @@ class ManagePinView(BaseView):
             pin.control_mode = control_mode          
             pin.save()
             if favorite:
-                is_fav_pin , created = Favorites.objects.get_or_create(user=self.user, pin=pin) # Random number
+                is_fav_pin , created = Favorites.objects.get_or_create(user=self.user, pin=pin)
                 if created:
+                    
+                    print("\n\nTTTTTTTTTTRRRRRRRRUUU\n\n")
                     _favs = Favorites.objects.filter(user=self.user).order_by('-update_time')
                     if len(_favs ) > 5:
                         _favs.last().delete()
             else:
                 if Favorites.objects.filter(user=self.user, pin=pin).exists():
-                    Favorites.objects.filter(user=self.user, pin=pin).delete()
+                    Favorites.objects.get(user=self.user, pin=pin).delete()
             form.save()
             return redirect('objects', board_id=pin.board.id)
         return self.get(request, pin_id=pin_id)
 
+
+def delete_object(request, pin_id):
+    Pins.objects.get(id=pin_id).delete()
+    favs = Favorites.objects.filter(pin__id=pin_id)
+    if favs:
+        for f in favs:
+            f.delete()
+    return redirect('my_antities')
 
 
 
@@ -375,8 +383,8 @@ class AntitiesView(BaseView):
         self.context.update({
             "board_is_active": True,
             "place_manager" : self.user.place_manager,
-            "title": "My places",
-            "description": "blablaba balab dvhfw",
+            "title": "My Entities",
+            "description": "An entity is a part of a location coresponding to a single board",
             "userantities": userantities,
         })
         return render(request, self.template_name, self.context)
@@ -400,8 +408,8 @@ class CreateAntityView(BaseView):
         self.context.update({
             "board_is_active": True,
             'form': form,
-            'title': "Add an Antity",
-            'description': "Add an Antity",
+            'title': "Add an Entity",
+            'description': "The code of the entity will be used by the board to acces its data",
         })
         return render(request, self.template_name, self.context)
 
@@ -427,19 +435,32 @@ class ManageAntityView(BaseView):
     def get(self, request, board_id):
         if not (self.user.place_manager):
             return redirect('login')
-
         board = get_object_or_404(Board, id=board_id)
+        pins = Pins.objects.filter(board=board)
         if not check_place_manager(user=self.user, place=board.place):
             return redirect('dashboard')
 
         self.get_nav_and_fav_pins_notifs()
         form = self.form_class(instance=board, user=self.user)
+        if pins:
+            dates_data, energy_data, past_date, today = get_last_twenty_days_enregy_consumption(pins)
+        else : 
+            dates_data, energy_data, past_date, today = None, None, None, None
+
+        print(f'{dates_data}\n\n{energy_data}\n\n{past_date , today}')
+
         self.context.update({
             "board_is_active": True,
             'form': form,
+            "management": True,
             'bord_is_active': True,
             'title': f"Manage {board.nom} from {board.place.nom}",
-            'description': "blablaba balab dvhfw",
+            'description': "Edit or delete the entity, View its energy report",
+            'dates_data': dates_data,
+            'energy_data': energy_data,
+            'past_date': past_date,
+            'today': today,
+            'have_pins': pins,
         })
         return render(request, self.template_name, self.context)
 
@@ -457,6 +478,19 @@ class ManageAntityView(BaseView):
 
 
 
+def delete_antity(request, board_id):
+    antity = Board.objects.get(id=board_id)
+    pins = Pins.objects.filter(board=antity)
+
+    for pin in pins:
+        favs = Favorites.objects.filter(pin=pin)
+        if favs:
+            for f in favs:
+                f.delete()
+        pin.delete()
+    antity.delete()
+    return redirect('my_antities')
+
 
 
 
@@ -466,9 +500,7 @@ class PlacesView(BaseView):
     template_name = 'gpio/places.html'
 
     def get(self, request):
-        if not check_place_manager(user=self.user, place=None):
-            return redirect('dashboard')
-        
+        # no need to check if he is a place manager because every one ca create a place
         userplaces = self.user.places.all()
         for place in userplaces:
             place.name = place.nom.capitalize()
@@ -483,7 +515,7 @@ class PlacesView(BaseView):
         self.context.update({
             "place_is_active": True,
             "title": "My places",
-            "description": "blablaba balab dvhfw",
+            "description": "The list of places or locations you can manage, click on add a place to add one.",
             "userplaces": userplaces,
         })
         return render(request, self.template_name, self.context)
@@ -505,20 +537,20 @@ class CreatePlaceView(BaseView):
         self.context.update({
             "place_is_active" : True,
             'form': form,
-            'title': "Add a Locaton",
-            'description': "Add an Antity",
+            'title': "Add a Place",
+            'description': "Add a Location , the required fields are marked with *",
         })
         return render(request, self.template_name, self.context)
 
     def post(self, request):
-        if not (self.user.place_manager):
-            return redirect('login')
-
+        
         form = self.form_class(request.POST)
         if form.is_valid():
             place = form.save(commit=False)
             place.save()
+            self.user.place_manager = True
             self.user.places.add(place)
+            self.user.save()
             return redirect('my_places')
         return self.get(request)
 
@@ -532,15 +564,30 @@ class ManagePlaceView(BaseView):
 
     def get(self, request, place_id):
         place = get_object_or_404(Places, id=place_id)
+        pins = Pins.objects.filter(board__place = place)
         if not (self.user.place_manager) or not check_place_manager(user=self.user, place=place):
             return redirect('login')
         form = self.form_class(instance=place)
+        if pins:
+            dates_data, energy_data, past_date, today = get_last_twenty_days_enregy_consumption(pins)
+        else : 
+            dates_data, energy_data, past_date, today = None, None, None, None
+
+        print(f'{dates_data}\n\n{energy_data}\n\n{past_date , today}')
+
         self.get_nav_and_fav_pins_notifs()
         self.context.update({
             "place_is_active" : True,
+            "management": True,
             'form': form,
-            'title': "Add a Locaton",
-            'description': "Add an Antity",
+            'title': f"Manage {place.nom}",
+            'description': "Edit or delete the Location, View its energy consumption report for the last 20 days ",
+            'dates_data': dates_data,
+            'energy_data': energy_data,
+            'past_date': past_date,
+            'today': today,
+            'have_pins': pins,
+            
         })
         return render(request, self.template_name, self.context)
 
@@ -552,8 +599,22 @@ class ManagePlaceView(BaseView):
             return redirect('my_places')
         return self.get(request)
 
-def clear_old_notifications():
-    Notification.objects.filter(created_at__lte=timezone.now() - timedelta(days=7)).delete()
+
+def delete_place(request, place_id):
+    place = Places.objects.get(id=place_id)
+    antities = Board.objects.filter(place=place)
+    pins = Pins.objects.filter(board__place=place)
+    for pin in pins:
+        favs = Favorites.objects.filter(pin=pin)
+        if favs:
+            for f in favs:
+                f.delete()
+        pin.delete()
+        pin.delete()
+    for antity in antities:
+        antity.delete()
+    place.delete()
+    return redirect('my_places')
 
 
 

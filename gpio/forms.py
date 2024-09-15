@@ -56,7 +56,10 @@ class AntityForm(forms.ModelForm):
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Places
-        fields = ['nom']
+        fields = ['nom', 'address', 'description']
         widgets = {
             'nom': forms.TextInput(attrs={'class': 'form-control form-control-solid'}),
+            'address': forms.TextInput(attrs={'class': 'form-control form-control-solid'}),
+            'description': forms.Textarea(attrs={'class': 'form-control form-control-solid'}),
+
         }

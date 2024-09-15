@@ -17,7 +17,7 @@
                         {% if place_manager %}
                         <a href="{% url 'create_antity' %}"  class="btn btn-primary">
                             <span class="indicator-label">
-                                Add an Antity
+                                Add an Entity
                             </span>
                         </a>
                         
@@ -33,7 +33,7 @@
                                 <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                                                  
                                     <div class="flex-grow-1 me-2">
-                                        <a class="text-gray-800 text-hover-primary fs-6 fw-bold">{{board.name}}</a>
+                                        <a class="text-gray-800 text-hover-primary fs-6 fw-bold">{{board.name}} at {{board.place}}</a>
                                         
                                         <span class="text-muted fw-semibold d-block fs-7">{{board.objects_number}} Object(s)</span>
                                     </div>

@@ -22,14 +22,17 @@ urlpatterns = [
     path('get-available-gpios/', views.get_available_gpios, name='get_available_gpios'),
     path('create/object', CreatePinView.as_view(), name='create_pin'),
     path('manage/pin/<int:pin_id>', ManagePinView.as_view(), name='manage_pin'),
+    path('delete/p/<int:pin_id>', views.delete_object, name='delete_object'),
 
     path('my-antities/', AntitiesView.as_view(), name='my_antities'),
     path('create/antity', CreateAntityView.as_view(), name='create_antity'),
     path("manage/antity/<int:board_id>/", ManageAntityView.as_view(), name="manage_antity"),
+    path('delete/a/<int:board_id>', views.delete_antity, name='delete_antity'),
 
     path('my-places/', PlacesView.as_view(), name='my_places'),
     path('create/place', CreatePlaceView.as_view(), name='create_place'),
     path('manage/place/<int:place_id>', ManagePlaceView.as_view(), name='manage_place'),
+    path('delete/p/<int:place_id>', views.delete_place, name='delete_place'),
 
 
 

@@ -5,7 +5,7 @@ from django.conf import settings
 class Places(models.Model):
     nom = models.CharField(max_length=255, unique=True, blank=False)
     address = models.CharField(max_length=255, null=False, blank=False)
-    description = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.nom

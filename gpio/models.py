@@ -27,11 +27,11 @@ class Pins(models.Model):
     nom = models.CharField(max_length=255, null=True, blank=False)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     GPIO_CHOICES = {
+        5  :"5",
         12 :"12",
-        16 :"16",
-        22 :"22",
-        28 :"28",
-        34 :"34",
+        14 :"14",
+        18 :"18",
+        19 :"19",
     }
     gpio = models.IntegerField(choices=GPIO_CHOICES, null=True, blank=False)
     state = models.IntegerField()

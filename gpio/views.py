@@ -77,7 +77,7 @@ def switch_on(request):
         data = json.loads(request.body.decode('utf-8'))
         pin_id = data.get('pin_id')
         pin = Pins.objects.get(id=pin_id)
-        pin.state = 1
+        pin.state = 0
         pin.save()
         if pin.state == 1:
             register_energy_consumption(pin)
@@ -94,7 +94,7 @@ def switch_off(request):
         data = json.loads(request.body.decode('utf-8'))
         pin_id = data.get('pin_id')
         pin = Pins.objects.get(id=pin_id)
-        pin.state = 0
+        pin.state = 1
         pin.save()
         if pin.state == 0:
             register_energy_consumption(pin)

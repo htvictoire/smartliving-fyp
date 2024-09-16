@@ -94,21 +94,21 @@ $(document).ready(function() {
                 success: function(response) {
                     var pinState = response.state;
                     var pinCard = $('#pin-' + pinId);
-                    var statusText = pinState === 1 ? 'Running' : 'Not Running';
-                    var statusColor = pinState === 1 ? 'green' : 'blue';
-                    var textColor = pinState === 1 ? 'text-success' : 'text-primary';
-                    
+                    var statusText = pinState === 0 ? 'Running' : 'Not Running';
+                    var statusColor = pinState === 0 ? 'green' : 'blue';
+                    var textColor = pinState === 0 ? 'text-success' : 'text-primary';
+
                     // Update checkbox
-                    $('#pin-checkbox-' + pinId).prop('checked', pinState === 1);
-                    
+                    $('#pin-checkbox-' + pinId).prop('checked', pinState === 0);
+
                     // Update status and manage button dynamically
                     pinCard.find('#pin-status-' + pinId).removeClass().addClass('rounded ' + textColor + ' fw-semibold fs-8 bg-light-success py-1 px-2 border border-success-clarity').text(statusText);
                     pinCard.find('#pin-svg-' + pinId).css('background', statusColor);
                     pinCard.find('#manage-btn-' + pinId).removeClass().addClass(textColor);
 
-                    
-                    if (pinState === 1) {
-                        
+
+                    if (pinState === 0) {
+
                         // Update SVG and status text for Running
                         $('input[data-pin-id="' + pinId + '"]').closest('.card').find('.d-flex.flex-stack').first().html(`
                             <div class="d-flex flex-center h-40px w-40px flex-shrink-0 rounded-circle border border-light-clarity" style="background: green">

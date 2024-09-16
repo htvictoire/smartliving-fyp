@@ -17,6 +17,8 @@ urlpatterns = [
     path('send_message/', SendMessageView.as_view(), name='sendmessage'),
     path('update_messages/<int:message_id>/', views.update_messages, name='update_messages'),
 
+    path('receive/messages/', views.receive_messages, name='receive_messages'),
+    path('send_sms/', views.send_message, name='send_message'),
 
     path('antity/<int:board_id>', PinsView.as_view(), name='objects'),
     path('get-available-gpios/', views.get_available_gpios, name='get_available_gpios'),

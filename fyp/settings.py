@@ -177,7 +177,7 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 #DEBUG = getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = ['vicky243.pythonanywhere.com']
+ALLOWED_HOSTS = ['*']
 
 
 
